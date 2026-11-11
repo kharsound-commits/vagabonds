@@ -11,7 +11,7 @@
 <link rel="apple-touch-icon" href="img/icon-180.png">
 
 <meta charset="utf-8">
-<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover">
 <title>Vagabonds</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bangers&family=Rubik:wght@400;500;700&display=swap">
@@ -713,6 +713,18 @@ body.homemode .wrap{padding:0 10px 30px}
 .card.locked .stars,.card.locked .zaps{display:none}
 .scene .card .zaps path,.arena .card .zaps path{stroke-width:1.6}
 @media (prefers-reduced-motion:reduce){.card .stars b,.card .zaps path{animation:none!important;opacity:0}}
+
+/* ---------- correctifs téléphone ---------- */
+html,body{overflow-x:hidden;touch-action:manipulation;-webkit-text-size-adjust:100%;overscroll-behavior-x:none}
+header.top{padding-top:env(safe-area-inset-top)}
+.ts-screen{padding-top:env(safe-area-inset-top);padding-bottom:env(safe-area-inset-bottom)}
+body.homemode .wrap{padding-top:env(safe-area-inset-top)}
+.wrap{padding-bottom:calc(40px + env(safe-area-inset-bottom))}
+.fx{padding-top:calc(16px + env(safe-area-inset-top));padding-bottom:calc(16px + env(safe-area-inset-bottom))}
+.fx .skip{top:calc(14px + env(safe-area-inset-top))}
+@media (max-width:760px){select{font-size:16px}}
+.arena,.pscene,.scene{max-width:100%}
+.card,.fighter,.pack,.isle,.quad{-webkit-tap-highlight-color:transparent;-webkit-touch-callout:none}
 </style>
 </head>
 <body>
@@ -1054,6 +1066,7 @@ function renderSndBtns(){ document.querySelectorAll('.sndbtns').forEach(el => el
 const sfx = (name, ...a) => { try{ if(SND.ctx && SND.sfx) SFX[name](...a); }catch(e){} };
 const sfxAt = (ms, name, ...a) => setTimeout(() => sfx(name, ...a), ms);
 document.addEventListener('pointerdown', () => { if(actx()) setMusic(view==='combat'?'battle':'menu'); }, {capture:true});
+['gesturestart','gesturechange'].forEach(ev => document.addEventListener(ev, e => e.preventDefault()));
 
 /* ---------- navigation ---------- */
 let view = 'home';
@@ -1198,14 +1211,23 @@ function packSkip(){
  fx.querySelectorAll('.pc').forEach(c => { c.classList.remove('spot','charge'); c.classList.add('dealt','flip'); });
  PK.flipped = 3; document.getElementById('fxHint').textContent = ''; fx.classList.add('end');
 }
-function packDone(){ if(PK) PK.timers.forEach(clearTimeout); PK = null; document.getElementById('fxRoot').innerHTML = ''; }
-const isPortrait = () => window.innerWidth < 760 && window.innerHeight > window.innerWidth;
+function packDone(){ if(PK) PK.timers.forEach(clearTimeout); PK = null; document.getElementById('fxRoot').innerHTML = ''; const r = document.getElementById('pullRes'); if(r) setTimeout(() => r.scrollIntoView({behavior:'smooth', block:'start'}), 60); }
+function isPortrait(){
+ if(typeof screen==='undefined') return false;
+ const sw = Math.min(screen.width||9999, screen.height||9999);
+ if(sw < 760){ // téléphone : on se fie à l'orientation de l'écran, pas à la largeur de la page (qui peut gonfler sur iPhone)
+  if(screen.orientation && screen.orientation.type) return screen.orientation.type.indexOf('portrait')===0;
+  if(typeof window.orientation==='number') return window.orientation % 180 === 0;
+  return screen.height > screen.width;
+ }
+ return window.innerWidth < 760 && window.innerHeight > window.innerWidth;
+}
 let _wasP = null;
 window.addEventListener('resize', () => { const p = isPortrait(); if(_wasP!==null && p!==_wasP && ['team','story','free','gacha','combat'].includes(view)) render(); _wasP = p; });
 function vGacha(){
  let res = '';
  if(lastPull){
-  res = `<div class="panel"><h3 style="font-size:24px">Ton tirage</h3><div class="grid" style="margin-top:10px">` + lastPull.map((p,i) => {
+  res = `<div class="panel" id="pullRes" style="scroll-margin-top:120px"><h3 style="font-size:24px">Ton tirage</h3><div class="grid" style="margin-top:10px">` + lastPull.map((p,i) => {
    const c = CARDS[p.k], o = own(p.k);
    let act = '';
    if(p.isNew) act = `<span class="tag new">Nouveau !</span>`;
