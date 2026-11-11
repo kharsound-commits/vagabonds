@@ -505,6 +505,23 @@ body.homemode .wrap{padding:0 10px 30px}
 .pgrid .card .nm,.pteam .card .nm{font-size:14px}.pgrid .card .pv,.pteam .card .pv{font-size:14px}
 .pgrid .card .bot,.pteam .card .bot{font-size:8px}
 .pgacha{width:min(56vw,240px)}
+.pkrow{position:absolute;left:4%;right:4%;top:13%;display:flex;justify-content:space-around;align-items:flex-start;gap:2cqw}
+.pkrow .pkopt{width:24%;display:flex;flex-direction:column;align-items:center;gap:.8cqw;text-align:center}
+.pkrow .pack-btn{width:62%}
+.pkname{font-size:2.6cqw;color:#ffe6b0;letter-spacing:.06em;text-shadow:0 0 6px #000,0 2px 4px #000,0 0 14px rgba(0,0,0,.9)}
+.pkrow .btn{font-size:1.5cqw;padding:.6cqw 1.8cqw;min-height:0}
+.pkinfo{font-size:1.15cqw;line-height:1.35;color:#fff3d6;background:rgba(10,12,22,.78);border:1px solid rgba(216,180,80,.55);border-radius:8px;padding:.6cqw .8cqw}
+.pkinfo span{opacity:.85;font-size:.95em}
+.pkrow.p{position:static;display:grid;grid-template-columns:repeat(3,1fr);gap:8px;width:100%;max-width:420px}
+.pkrow.p .pkopt{width:auto;gap:6px}
+.pkrow.p .pack-btn{width:80%}
+.pkrow.p .pkname{font-size:18px}
+.pkrow.p .btn{font-size:13px;padding:6px 10px}
+.pkrow.p .pkinfo{font-size:10.5px;padding:5px 6px}
+.pk-classique .pack img{filter:saturate(.55) brightness(.92)}
+.pk-avance .pack img{filter:hue-rotate(185deg) saturate(1.25)}
+.pk-premium .pack img{filter:sepia(.35) saturate(1.6) brightness(1.08) drop-shadow(0 0 10px rgba(255,210,90,.9))}
+.pkopt.pk-premium .pkname{color:#ffd45a;text-shadow:0 0 10px rgba(255,200,60,.8),0 2px 4px #000}
 .pstory .ppath{position:relative;display:flex;flex-direction:column;align-items:center;gap:26px;padding:10px 0}
 .pstory .ppath::before{content:"";position:absolute;top:30px;bottom:30px;left:50%;border-left:3px dashed rgba(255,230,170,.7)}
 .pstory .mk{position:relative;transform:none;flex-direction:row;gap:10px;left:auto!important;top:auto!important}
@@ -813,7 +830,7 @@ const esc = s => String(s).replace(/[&<>"]/g, c => ({'&':'&amp;','<':'&lt;','>':
 const pick = a => a[Math.floor(Math.random()*a.length)];
 
 /* ---------- mise à jour automatique (app installée sur l'écran d'accueil) ---------- */
-const APP_VER = '1.1.4';
+const APP_VER = '1.1.5';
 async function checkUpdate(){
  if(location.protocol.indexOf('http')!==0 || location.hostname.indexOf('claude')>=0) return;
  try {
@@ -1164,27 +1181,38 @@ function vHome(){
  const arcName = nxt<0 ? 'Histoire terminée' : 'Arc '+(FIGHTS[nxt].a+1)+' · '+DATA.story[FIGHTS[nxt].a].t;
  const Q = [['team','ÉQUIPE',`${S.team.length}/6 persos · ${Object.keys(S.owned).length} cartes`,'36%','62%','31%','11%'],
   ['story','HISTOIRE',arcName,'34%','62%','30%','11%'],
-  ['gacha','TIRAGES','500 pièces le paquet','36%','51%','31%','11%'],
+  ['gacha','TIRAGES','3 paquets, dès 200 pièces','36%','51%','31%','11%'],
   ['free','COMBATS LIBRES','Affronte toutes les équipes','34%','51%','30%','11%']];
  return `<div class="menu-bar"><img src="img/ui_logo.webp" alt="Vagabonds"><div style="display:flex;gap:8px;align-items:center"><div class="sndbtns"></div><div class="gold">● ${S.gold} pièces</div></div></div>
- ${!S.intro?`<p style="text-align:center;max-width:760px;margin:0 auto 10px;color:#fff;text-shadow:0 1px 3px #000">Pour commencer, tu as <b>1 500 pièces</b>, de quoi ouvrir 3 paquets. Tire tes premières cartes, forme ton équipe, puis lance l'arc Rencontre.</p>`:''}
+ ${!S.intro?`<p style="text-align:center;max-width:760px;margin:0 auto 10px;color:#fff;text-shadow:0 1px 3px #000">Pour commencer, tu as <b>1 500 pièces</b>, de quoi ouvrir plusieurs paquets. Tire tes premières cartes, forme ton équipe, puis lance l'arc Rencontre.</p>`:''}
  <div class="quads">${Q.map(([v,n,sub,l,tp,w,h]) => `<button class="quad" data-go="${v}" aria-label="${n}"><span class="pl fg engr" style="left:${l};top:${tp};width:${w};height:${h};${n.length>10?"font-size:3.1cqw":""}">${n}</span><span class="sb" style="top:calc(${tp} + ${h} + 1.5%)">${esc(sub)}</span></button>`).join('')}</div>
  <div class="menu-foot"><button class="btn gold sm" data-go="coll">Collection</button><button class="btn sec sm" data-go="rules">Règles</button><button class="btn sec sm" data-act="savebox">Sauvegarde</button><button class="btn sec sm" data-act="reset">Nouvelle partie</button></div>`;
 }
 
 /* ---------- tirage ---------- */
 let lastPull = null;
-function rollCard(slot){
- if(slot < 2) return pick(DATA.cards.filter(c => c.r === 'commune')).k;
- const r = Math.random();
- const rar = r < 0.80 ? 'rare' : r < 0.97 ? 'ultra' : 'legend';
+/* trois paquets : les chances de chaque emplacement */
+const RP = {rare:.80, ultra:.17, legend:.03};
+const PACKS = {
+ classique: {nom:'Paquet Classique', prix:200, slots:[{commune:1}, {commune:1}, {rare:.93, ultra:.06, legend:.01}],
+  txt:'<b>2 communes</b> et <b>1 rare ou mieux</b>', pct:'rare 93 %, ultra rare 6 %, légendaire 1 %'},
+ avance: {nom:'Paquet Avancé', prix:500, slots:[{commune:1}, RP, RP],
+  txt:'<b>1 commune</b> et <b>2 rares ou mieux</b>', pct:'chaque carte rare ou mieux : rare 80 %, ultra rare 17 %, légendaire 3 %'},
+ premium: {nom:'Paquet Premium', prix:2000, slots:[RP, RP, {ultra:.85, legend:.15}],
+  txt:'<b>2 rares ou mieux</b> et <b>1 ultra rare ou mieux garantie</b>', pct:'carte garantie : ultra rare 85 %, légendaire 15 %'},
+};
+function rollSlot(sl){
+ let r = Math.random(), rar = 'commune';
+ for(const [k,p] of Object.entries(sl)){ rar = k; if(r < p) break; r -= p; }
  return pick(DATA.cards.filter(c => c.r === rar)).k;
 }
-function doPull(){
- if(S.gold < 500) return toast('Pas assez de pièces');
+let curPack = 'avance';
+function doPull(id){
+ const P = PACKS[id] || PACKS.avance;
+ if(S.gold < P.prix) return toast('Pas assez de pièces');
  if(lastPull && lastPull.some(p => p.dup && !p.done)) return toast('Choisis d\'abord quoi faire des doublons');
- S.gold -= 500; S.intro = true;
- lastPull = [0,1,2].map(i => { const k = rollCard(i); const isNew = addCard(k); return {k, isNew, dup:!isNew, done:isNew}; });
+ S.gold -= P.prix; S.intro = true; curPack = id in PACKS ? id : 'avance';
+ lastPull = P.slots.map(sl => { const k = rollSlot(sl); const isNew = addCard(k); return {k, isNew, dup:!isNew, done:isNew}; });
  save(); render(); packAnim(lastPull);
 }
 /* ---------- animation du paquet ---------- */
@@ -1198,7 +1226,7 @@ function packAnim(pull){
  // la meilleure carte est révélée en dernier
  const order = pull.map((p,i)=>i).sort((a,b) => RORD.indexOf(CARDS[pull[a].k].r)-RORD.indexOf(CARDS[pull[b].k].r));
  PK = {pull, order, best, flipped:0, timers:[], opened:false, busy:false, dealt:false};
- document.getElementById('fxRoot').innerHTML = `<div class="fx" id="fx" role="dialog" aria-label="Ouverture du paquet">
+ document.getElementById('fxRoot').innerHTML = `<div class="fx pk-${curPack}" id="fx" role="dialog" aria-label="Ouverture du paquet">
   <div class="fx-flash" id="fxFlash"></div><div class="pillar"></div>
   <button class="btn sec sm skip" data-act="pskip">Passer</button>
   <div class="hint" id="fxHint">Touche le paquet pour l'ouvrir&nbsp;!</div>
@@ -1307,17 +1335,21 @@ function vGacha(){
    return `<div class="reveal" style="animation-delay:${i*0.08}s">${cardHTML(p.k,{attr:`data-card="${p.k}"`})}<div style="margin-top:6px;font-weight:700">${RNAME[c.r]}</div>${act}</div>`;
   }).join('') + `</div></div>`;
  }
+ const packBtn = id => { const P = PACKS[id], no = S.gold < P.prix;
+  return `<div class="pkopt pk-${id}"><button class="pack-btn" data-act="pull" data-p="${id}" ${no?'disabled':''} aria-label="Ouvrir un ${P.nom} pour ${P.prix} pièces"><div class="pack" style="width:100%"><img class="pk-top" src="img/pack_top.webp" alt=""><div class="pk-b"><img src="img/pack_body.webp" alt=""></div></div></button>
+   <div class="pkname fg">${P.nom.replace('Paquet ','').toUpperCase()}</div>
+   <button class="btn gold sm" data-act="pull" data-p="${id}" ${no?'disabled':''}>${P.prix} pièces</button>
+   <div class="pkinfo">${P.txt}<br><span>${P.pct}</span></div></div>`; };
+ const ids = ['classique','avance','premium'];
  if(isPortrait()) return `<div class="pscene" style="background-image:url(img/ui_gacha.jpg)">
   <div class="ptitle fg">TIRAGES</div>
-  <button class="pack-btn pgacha" data-act="pull" ${S.gold<500?'disabled':''} aria-label="Ouvrir un paquet pour 500 pièces"><div class="pack" style="width:100%"><img class="pk-top" src="img/pack_top.webp" alt=""><div class="pk-b"><img src="img/pack_body.webp" alt="Paquet Vagabonds"></div></div></button>
-  <button class="btn gold" data-act="pull" ${S.gold<500?'disabled':''}>${S.gold<500?'Pas assez de pièces':'Ouvrir un paquet · 500 pièces'}</button>
-  <p class="pnote">3 cartes par paquet : <b>2 communes</b> et <b>1 rare ou mieux</b> (rare 80 %, ultra rare 17 %, légendaire 3 %). Un doublon se vend 10 pièces, ou améliore la spéciale.</p>
+  <div class="pkrow p">${ids.map(packBtn).join('')}</div>
+  <p class="pnote">3 cartes par paquet. Un doublon se vend 10 pièces, ou améliore la spéciale.</p>
  </div>${res}`;
- return `<div class="scene-wrap"><div class="scene" style="background-image:url(img/ui_gacha.jpg);--minw:640px">
+ return `<div class="scene-wrap"><div class="scene" style="background-image:url(img/ui_gacha.jpg);--minw:760px">
  <div class="scene-title fg">TIRAGES</div>
- <button class="hot pack-btn" style="left:50%;top:19%;width:14%;transform:translateX(-50%)" data-act="pull" ${S.gold<500?'disabled':''} aria-label="Ouvrir un paquet pour 500 pièces"><div class="pack" style="width:100%"><img class="pk-top" src="img/pack_top.webp" alt=""><div class="pk-b"><img src="img/pack_body.webp" alt="Paquet Vagabonds"></div></div></button>
- <button class="hot btn gold gbtn" style="left:50%;top:80%;transform:translateX(-50%)" data-act="pull" ${S.gold<500?'disabled':''}>${S.gold<500?'Pas assez de pièces':'Ouvrir un paquet · 500 pièces'}</button>
- <div class="scene-note" style="left:auto;right:1.5cqw">3 cartes par paquet : <b>2 communes</b> et <b>1 rare ou mieux</b> (rare 80 %, ultra rare 17 %, légendaire 3 %). Un doublon se vend 10 pièces, ou améliore la spéciale de la carte.</div>
+ <div class="pkrow">${ids.map(packBtn).join('')}</div>
+ <div class="scene-note" style="left:auto;right:1.5cqw">3 cartes par paquet. Un doublon se vend 10 pièces, ou améliore la spéciale de la carte.</div>
  </div></div>${res}`;
 }
 
@@ -1964,7 +1996,7 @@ document.addEventListener('click', e => {
   case 'tmus': sndToggle('mus'); break;
   case 'tsfx': sndToggle('sfx'); break;
   case 'retry': { const cx = C.ctx; C = null; startCombat(cx.type==='story' ? {type:'story', i:cx.i} : cx); break; }
-  case 'pull': doPull(); break;
+  case 'pull': doPull(a.dataset.p); break;
   case 'popen': packOpen(); break;
   case 'pflip': packTap(+a.dataset.i); break;
   case 'pskip': packSkip(); break;
