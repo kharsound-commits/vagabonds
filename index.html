@@ -830,7 +830,7 @@ const esc = s => String(s).replace(/[&<>"]/g, c => ({'&':'&amp;','<':'&lt;','>':
 const pick = a => a[Math.floor(Math.random()*a.length)];
 
 /* ---------- mise à jour automatique (app installée sur l'écran d'accueil) ---------- */
-const APP_VER = '1.1.5';
+const APP_VER = '1.1.6';
 async function checkUpdate(){
  if(location.protocol.indexOf('http')!==0 || location.hostname.indexOf('claude')>=0) return;
  try {
@@ -1198,8 +1198,8 @@ const PACKS = {
   txt:'<b>2 communes</b> et <b>1 rare ou mieux</b>', pct:'rare 93 %, ultra rare 6 %, légendaire 1 %'},
  avance: {nom:'Paquet Avancé', prix:500, slots:[{commune:1}, RP, RP],
   txt:'<b>1 commune</b> et <b>2 rares ou mieux</b>', pct:'chaque carte rare ou mieux : rare 80 %, ultra rare 17 %, légendaire 3 %'},
- premium: {nom:'Paquet Premium', prix:2000, slots:[RP, RP, {ultra:.85, legend:.15}],
-  txt:'<b>2 rares ou mieux</b> et <b>1 ultra rare ou mieux garantie</b>', pct:'carte garantie : ultra rare 85 %, légendaire 15 %'},
+ premium: {nom:'Paquet Premium', prix:2000, slots:[{ultra:.92, legend:.08}],
+  txt:'<b>1 seule carte</b>, ultra rare ou mieux garantie', pct:'ultra rare 92 %, légendaire 8 %'},
 };
 function rollSlot(sl){
  let r = Math.random(), rar = 'commune';
@@ -1344,12 +1344,12 @@ function vGacha(){
  if(isPortrait()) return `<div class="pscene" style="background-image:url(img/ui_gacha.jpg)">
   <div class="ptitle fg">TIRAGES</div>
   <div class="pkrow p">${ids.map(packBtn).join('')}</div>
-  <p class="pnote">3 cartes par paquet. Un doublon se vend 10 pièces, ou améliore la spéciale.</p>
+  <p class="pnote">Classique et Avancé : 3 cartes. Premium : 1 carte. Un doublon se vend 10 pièces, ou améliore la spéciale.</p>
  </div>${res}`;
  return `<div class="scene-wrap"><div class="scene" style="background-image:url(img/ui_gacha.jpg);--minw:760px">
  <div class="scene-title fg">TIRAGES</div>
  <div class="pkrow">${ids.map(packBtn).join('')}</div>
- <div class="scene-note" style="left:auto;right:1.5cqw">3 cartes par paquet. Un doublon se vend 10 pièces, ou améliore la spéciale de la carte.</div>
+ <div class="scene-note" style="left:auto;right:1.5cqw">Classique et Avancé : 3 cartes. Premium : 1 carte. Un doublon se vend 10 pièces, ou améliore la spéciale de la carte.</div>
  </div></div>${res}`;
 }
 
