@@ -827,6 +827,7 @@ const WEAK = {}; Object.keys(BEATS).forEach(a => WEAK[BEATS[a]] = a);
 const RNAME = {commune:'Commune',rare:'Rare',ultra:'Ultra rare',legend:'Légendaire',mythic:'Ultra légendaire'};
 const GAIN = {commune:100,rare:200,ultra:350,legend:500,mythic:800};
 const LVLB = [0,0,10,20,30,50];
+const SELL = {commune:10, rare:20, ultra:50, legend:100, mythic:1000};
 /* chaque niveau renforce aussi les PV et l'attaque de base */
 const LVPV = [0,0,20,40,60,100], LVAT = [0,0,10,20,30,50];
 const base = k => (k.startsWith('L_') || k.startsWith('M_')) ? k.slice(2) : k;
@@ -842,7 +843,7 @@ const esc = s => String(s).replace(/[&<>"]/g, c => ({'&':'&amp;','<':'&lt;','>':
 const pick = a => a[Math.floor(Math.random()*a.length)];
 
 /* ---------- mise à jour automatique (app installée sur l'écran d'accueil) ---------- */
-const APP_VER = '1.2.1';
+const APP_VER = '1.2.2';
 async function checkUpdate(){
  if(location.protocol.indexOf('http')!==0 || location.hostname.indexOf('claude')>=0) return;
  try {
@@ -1344,7 +1345,7 @@ function vGacha(){
    if(p.isNew) act = `<span class="tag new">Nouveau !</span>`;
    else if(!p.done){
     const canUp = c.kind==='perso' && o.lvl < 5;
-    act = `<div class="row" style="margin-top:6px">${canUp?`<button class="btn sm" data-act="up" data-i="${i}">Améliorer (niv ${o.lvl}→${o.lvl+1} : +${LVPV[o.lvl+1]-LVPV[o.lvl]} PV, +${LVAT[o.lvl+1]-LVAT[o.lvl]} atq)</button>`:''}<button class="btn sec sm" data-act="sell" data-i="${i}">Vendre +10</button></div>`;
+    act = `<div class="row" style="margin-top:6px">${canUp?`<button class="btn sm" data-act="up" data-i="${i}">Améliorer (niv ${o.lvl}→${o.lvl+1} : +${LVPV[o.lvl+1]-LVPV[o.lvl]} PV, +${LVAT[o.lvl+1]-LVAT[o.lvl]} atq)</button>`:''}<button class="btn sec sm" data-act="sell" data-i="${i}">Vendre +${SELL[c.r]||10}</button></div>`;
    } else act = `<span class="tag">${esc(p.res)}</span>`;
    return `<div class="reveal" style="animation-delay:${i*0.08}s">${cardHTML(p.k,{attr:`data-card="${p.k}"`})}<div style="margin-top:6px;font-weight:700">${RNAME[c.r]}</div>${act}</div>`;
   }).join('') + `</div></div>`;
@@ -1358,12 +1359,12 @@ function vGacha(){
  if(isPortrait()) return `<div class="pscene" style="background-image:url(img/ui_gacha.jpg)">
   <div class="ptitle fg">TIRAGES</div>
   <div class="pkrow p">${ids.map(packBtn).join('')}</div>
-  <p class="pnote">Classique et Avancé : 3 cartes. Premium : 1 carte. Un doublon se vend 10 pièces, ou fait monter la carte d'un niveau (PV, attaque et spéciale).</p>
+  <p class="pnote">Classique et Avancé : 3 cartes. Premium : 1 carte. Un doublon se vend selon sa rareté (10 à 1000 pièces), ou fait monter la carte d'un niveau (PV, attaque et spéciale).</p>
  </div>${res}`;
  return `<div class="scene-wrap"><div class="scene" style="background-image:url(img/ui_gacha.jpg);--minw:760px">
  <div class="scene-title fg">TIRAGES</div>
  <div class="pkrow">${ids.map(packBtn).join('')}</div>
- <div class="scene-note" style="left:auto;right:1.5cqw">Classique et Avancé : 3 cartes. Premium : 1 carte. Un doublon se vend 10 pièces, ou fait monter la carte d'un niveau (PV, attaque et spéciale).</div>
+ <div class="scene-note" style="left:auto;right:1.5cqw">Classique et Avancé : 3 cartes. Premium : 1 carte. Un doublon se vend selon sa rareté (10 à 1000 pièces), ou fait monter la carte d'un niveau (PV, attaque et spéciale).</div>
  </div></div>${res}`;
 }
 
@@ -1752,9 +1753,9 @@ function finish(win, fled){
     if(F.last){
      if(arc.zoeLink) S.story.zoe = true;
      if(arc.reward){ const nw = addCard(arc.reward); const o = own(arc.reward);
-      let up = false; if(!nw){ if(o.lvl<5){ o.lvl++; up = true; } else S.gold += 10; }
+      let up = false; if(!nw){ if(o.lvl<5){ o.lvl++; up = true; } else S.gold += SELL[CARDS[arc.reward].r]||10; }
       const rn = `${CARDS[arc.reward].nom}${arc.reward.startsWith('L_')?' légendaire':''}`;
-      msg = nw ? `${rn} rejoint ta collection !` : (up ? `Tu l'avais déjà : ${rn} passe au niveau ${o.lvl} (PV, attaque et spéciale renforcés).` : `Tu l'avais déjà au niveau max : +10 pièces.`); C.rewardK = arc.reward; C.rewardNew = nw; }
+      msg = nw ? `${rn} rejoint ta collection !` : (up ? `Tu l'avais déjà : ${rn} passe au niveau ${o.lvl} (PV, attaque et spéciale renforcés).` : `Tu l'avais déjà au niveau max : +${SELL[CARDS[arc.reward].r]||10} pièces.`); C.rewardK = arc.reward; C.rewardNew = nw; }
      if(arc.zoeLink) msg += ' Alliance Matt + Zoé débloquée !';
     }
    }
@@ -2017,7 +2018,7 @@ document.addEventListener('click', e => {
   case 'pskip': packSkip(); break;
   case 'pdone': packDone(); break;
   case 'up': { const p = lastPull[+a.dataset.i]; const o = own(p.k); o.lvl = Math.min(5, o.lvl+1); o.n--; p.done = true; p.res = `Niveau ${o.lvl}`; save(); render(); break; }
-  case 'sell': { const p = lastPull[+a.dataset.i]; const o = own(p.k); o.n--; S.gold += 10; p.done = true; p.res = 'Vendue +10'; save(); render(); break; }
+  case 'sell': { const p = lastPull[+a.dataset.i]; const o = own(p.k), v = SELL[CARDS[p.k].r]||10; o.n--; S.gold += v; p.done = true; p.res = 'Vendue +'+v; save(); render(); break; }
   case 'add': closeModal(); teamAdd(a.dataset.k); break;
   case 'rm': closeModal(); S.team = S.team.filter(k => k!==a.dataset.k); save(); render(); break;
   case 'cap': S.team = [a.dataset.k, ...S.team.filter(k => k!==a.dataset.k)]; save(); render(); break;
