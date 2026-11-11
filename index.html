@@ -577,7 +577,7 @@ body.homemode .wrap{padding:0 10px 30px}
 .pfn b{font-size:18px;font-weight:400;color:#ffe6b0}.pfn .ok{color:#6fe38a}
 .pgo{font-size:22px;color:#ffd75a}
 /* combat portrait */
-.arena.portrait{position:relative;container-type:inline-size;margin:0 -10px;min-height:calc(100vh - 110px);padding:12px 8px 16px;background-size:cover;background-position:center;overflow:hidden;display:flex;flex-direction:column;gap:10px}
+.arena.portrait{position:relative;container-type:inline-size;margin:0;min-height:calc(100vh - 110px);padding:12px 8px 16px;background-size:cover;background-position:center;overflow:hidden;display:flex;flex-direction:column;gap:10px}
 .portrait .prow{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;padding:8px;border-radius:12px}
 .portrait .prow.e{background:rgba(160,20,20,.18);border:1px solid rgba(255,120,120,.55);box-shadow:0 0 16px rgba(255,60,60,.25)}
 .portrait .prow.p{background:rgba(20,60,160,.18);border:1px solid rgba(140,190,255,.6);box-shadow:0 0 16px rgba(80,140,255,.25)}
@@ -718,8 +718,8 @@ body.homemode .wrap{padding:0 10px 30px}
  .map .panel{width:100%}.map::before{display:none}
  .hero h1{font-size:42px}
  .logo{font-size:26px}
- nav.tabs{flex-wrap:nowrap;overflow-x:auto;padding-bottom:6px}
- nav.tabs button{flex:none}
+ nav.tabs{display:grid;grid-template-columns:repeat(4,1fr);gap:5px;padding-bottom:4px}
+ nav.tabs button{flex:none;min-width:0;padding:6px 2px;min-height:38px;font-size:12.5px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 }
 @media (prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
 
@@ -793,7 +793,7 @@ body.homemode .wrap{padding-top:env(safe-area-inset-top)}
 .fx .skip{top:calc(14px + env(safe-area-inset-top))}
 @media (max-width:760px){select{font-size:16px}}
 .arena,.pscene,.scene{max-width:100%}
-body.portrait.scenemode .wrap{padding-left:0;padding-right:0}
+body.portrait.scenemode .wrap{padding-left:0;padding-right:0;padding-top:0}
 body.portrait.scenemode .wrap>.panel{margin-left:10px;margin-right:10px}
 .card,.fighter,.pack,.isle,.quad{-webkit-tap-highlight-color:transparent;-webkit-touch-callout:none}
 
@@ -886,7 +886,7 @@ const esc = s => String(s).replace(/[&<>"]/g, c => ({'&':'&amp;','<':'&lt;','>':
 const pick = a => a[Math.floor(Math.random()*a.length)];
 
 /* ---------- mise à jour automatique (app installée sur l'écran d'accueil) ---------- */
-const APP_VER = '1.3.4';
+const APP_VER = '1.3.5';
 async function checkUpdate(){
  if(location.protocol.indexOf('http')!==0 || location.hostname.indexOf('claude')>=0) return;
  try {
@@ -1217,7 +1217,7 @@ const TABS = [['home','Menu'],['coll','Collection'],['team','Équipe'],['story',
 function go(v){ view = v; C = null; window.scrollTo(0,0); render(); }
 function render(){
  document.getElementById('goldBox').textContent = '● ' + S.gold + ' pièces';
- document.getElementById('tabs').innerHTML = TABS.map(([k,n]) => `<button class="${view===k?'on':''}" data-go="${k}">${n}</button>`).join('');
+ document.getElementById('tabs').innerHTML = TABS.map(([k,n]) => `<button class="${view===k?'on':''}" data-go="${k}">${isPortrait() && k==='free' ? 'Combats' : n}</button>`).join('');
  document.body.classList.toggle('homemode', view==='home');
  document.body.classList.toggle('scenemode', ['home','team','story','free','gacha','combat','event'].includes(view));
  _wasP = isPortrait(); document.body.classList.toggle('portrait', _wasP);
