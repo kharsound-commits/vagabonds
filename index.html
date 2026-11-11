@@ -843,7 +843,7 @@ const esc = s => String(s).replace(/[&<>"]/g, c => ({'&':'&amp;','<':'&lt;','>':
 const pick = a => a[Math.floor(Math.random()*a.length)];
 
 /* ---------- mise à jour automatique (app installée sur l'écran d'accueil) ---------- */
-const APP_VER = '1.2.2';
+const APP_VER = '1.2.3';
 async function checkUpdate(){
  if(location.protocol.indexOf('http')!==0 || location.hostname.indexOf('claude')>=0) return;
  try {
@@ -891,7 +891,7 @@ async function flush(){
   const id = await user.id(); if(!id) return;
   DB = db; UID = id;
   const snap = await db.doc('data/users/'+id+'/save').get();
-  if(snap.exists){ const d = snap.data(); if(d && d.t > (S.t||0)){ S = migrate(JSON.parse(d.json)); try{localStorage.setItem(SKEY, JSON.stringify(S));}catch(e){} render(); } }
+  if(snap.exists){ const d = snap.data(); if(d && d.t > (S.t||0)){ S = migrate(JSON.parse(d.json)); const b = arcBonusCheck(); if(b.tot) toast(`Bonus de fin d'arc (${b.names.join(', ')}) : +${b.tot} pièces`); try{localStorage.setItem(SKEY, JSON.stringify(S));}catch(e){} render(); } }
   else save();
  } catch(e) {}
 })();
@@ -1426,6 +1426,18 @@ function teamAdd(k){
 /* ---------- histoire ---------- */
 const teamRarity = keys => { const cnt={}; keys.forEach(k=>cnt[CARDS[k].r]=(cnt[CARDS[k].r]||0)+1); return Object.keys(cnt).sort((a,b)=>cnt[b]-cnt[a])[0]; };
 const FIGHTS = []; DATA.story.forEach((arc,a) => arc.f.forEach((f,j) => FIGHTS.push({a, j, key:a+'-'+j, f, last:j===arc.f.length-1})));
+/* bonus de fin d'arc : une seule fois par arc */
+const ARC_BONUS = [500,1000,1000,2000,2000,3000,3000];
+function arcBonusCheck(){
+ if(!S.arcBonus) S.arcBonus = {};
+ let tot = 0, names = [];
+ DATA.story.forEach((arc,a) => {
+  if(S.arcBonus[a] || !FIGHTS.filter(x => x.a===a).every(x => S.story.done[x.key])) return;
+  S.arcBonus[a] = 1; const v = ARC_BONUS[a]||0; S.gold += v; tot += v; names.push('Arc '+(a+1));
+ });
+ return {tot, names};
+}
+setTimeout(() => { const b = arcBonusCheck(); if(b.tot){ save(); render(); toast(`Bonus de fin d'arc (${b.names.join(', ')}) : +${b.tot} pièces`); } }, 0);
 const fightAvail = i => i===0 || !!S.story.done[FIGHTS[i-1].key];
 const ARC_POS = [[42.5,82],[67.5,63],[32.5,53],[66.5,39.5],[38,31.5],[60,18],[30,12]];
 function vStory(){
@@ -1460,7 +1472,7 @@ function arcModal(a){
   const label = f.team.length===6 ? CARDS[f.team[0]].team : f.team.map(k => CARDS[k].nom).join(', ');
   return `<button class="btn ${done?'sec':''}" style="width:100%;text-align:left" data-act="fight" data-i="${i}" ${avail?'':'disabled'}>${done?'✓ ':avail?'⚔ ':'🔒 '}${esc(label)} · ${done?'rejouer +'+GAIN[r]/2:'+'+GAIN[r]} pièces</button>`;
  }).join('');
- const rw = arc.reward ? `Récompense : <b>${esc(CARDS[arc.reward].nom)}${arc.reward.startsWith('L_')?' légendaire':''}</b>` : 'Pas de carte en récompense';
+ const rw = (arc.reward ? `Récompense : <b>${esc(CARDS[arc.reward].nom)}${arc.reward.startsWith('L_')?' légendaire':''}</b>` : 'Pas de carte en récompense') + ` · Bonus de fin d'arc : <b>${ARC_BONUS[a]} pièces</b>${S.arcBonus && S.arcBonus[a] ? ' (reçu ✓)' : ''}`;
  modal(`<h2 style="font-size:34px">Arc ${a+1} · ${esc(arc.t)}</h2>
  <div style="margin:6px 0 12px"><span class="world">${arc.w==='haut'?'Île Céleste':'Le Four'}</span> <span class="muted">${rw}${arc.zoeLink?' · Débloque l\'alliance Matt + Zoé':''}</span></div>
  <div style="display:flex;flex-direction:column;gap:8px">${fights}</div>
@@ -1758,6 +1770,7 @@ function finish(win, fled){
       msg = nw ? `${rn} rejoint ta collection !` : (up ? `Tu l'avais déjà : ${rn} passe au niveau ${o.lvl} (PV, attaque et spéciale renforcés).` : `Tu l'avais déjà au niveau max : +${SELL[CARDS[arc.reward].r]||10} pièces.`); C.rewardK = arc.reward; C.rewardNew = nw; }
      if(arc.zoeLink) msg += ' Alliance Matt + Zoé débloquée !';
     }
+    const ab = arcBonusCheck(); if(ab.tot) msg += (msg?' ':'') + `Arc terminé : bonus de +${ab.tot} pièces !`;
    }
   }
   else { if(S.freeWins[ctx.id]) gain = gain/2; else S.freeWins[ctx.id] = 1; }
