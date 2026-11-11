@@ -505,6 +505,15 @@ body.homemode .wrap{padding:0 10px 30px}
 .pgrid .card .nm,.pteam .card .nm{font-size:14px}.pgrid .card .pv,.pteam .card .pv{font-size:14px}
 .pgrid .card .bot,.pteam .card .bot{font-size:8px}
 .pgacha{width:min(56vw,240px)}
+.mk.ev .lb{display:flex;flex-direction:column;align-items:center;gap:.1cqw}
+.mk.ev .lb small{font-size:.85em;color:#ffd45a;font-family:Rubik,sans-serif;letter-spacing:0}
+.mk.ev-g .md{background:radial-gradient(circle at 35% 30%,#d9ffd9,#5fd37a 60%,#23753a);border-color:#174a26;box-shadow:0 .4cqw 0 #174a26,0 0 2.5cqw rgba(90,230,120,.7)}
+.mk.ev-o .md{background:radial-gradient(circle at 35% 30%,#fff1c8,#f2a93a 60%,#a35c10);border-color:#5a3200;box-shadow:0 .4cqw 0 #5a3200,0 0 2.5cqw rgba(255,170,50,.7)}
+.mk.ev-r .md{background:radial-gradient(circle at 35% 30%,#ffd0d0,#e04a3a 60%,#7a1010);border-color:#3a0505;color:#fff;box-shadow:0 .4cqw 0 #3a0505,0 0 3cqw rgba(255,60,60,.8)}
+.mk.ev-g .lb{border-color:#5fd37a}.mk.ev-o .lb{border-color:#f2a93a}.mk.ev-r .lb{border-color:#e04a3a}
+.mk.ev.done .md{filter:saturate(.6)}
+.evtag.ev-g{background:#4caf6a;color:#fff}.evtag.ev-o{background:#e0a020}.evtag.ev-r{background:#d0402a;color:#fff}
+.pstory .mk.ev .lb{align-items:flex-start}
 .evbanner{display:flex;align-items:center;justify-content:center;gap:14px;flex-wrap:wrap;margin:10px auto 0;width:min(92%,760px);padding:12px 18px;border-radius:14px;border:2px solid #d8b450;cursor:pointer;color:#fff3d6;font:inherit;
  background:linear-gradient(rgba(20,10,40,.6),rgba(20,10,40,.85)),url(img/ui_gacha.jpg) center/cover;box-shadow:0 0 18px rgba(255,200,80,.35);animation:evpulse 2.4s ease-in-out infinite}
 .evbanner b{font-size:clamp(18px,2.6vw,26px);color:#ffe6b0;text-shadow:0 2px 4px #000}
@@ -870,7 +879,7 @@ const esc = s => String(s).replace(/[&<>"]/g, c => ({'&':'&amp;','<':'&lt;','>':
 const pick = a => a[Math.floor(Math.random()*a.length)];
 
 /* ---------- mise à jour automatique (app installée sur l'écran d'accueil) ---------- */
-const APP_VER = '1.3.2';
+const APP_VER = '1.3.3';
 async function checkUpdate(){
  if(location.protocol.indexOf('http')!==0 || location.hostname.indexOf('claude')>=0) return;
  try {
@@ -1203,7 +1212,7 @@ function render(){
  document.getElementById('goldBox').textContent = '● ' + S.gold + ' pièces';
  document.getElementById('tabs').innerHTML = TABS.map(([k,n]) => `<button class="${view===k?'on':''}" data-go="${k}">${n}</button>`).join('');
  document.body.classList.toggle('homemode', view==='home');
- document.body.classList.toggle('scenemode', ['home','team','story','free','gacha','combat'].includes(view));
+ document.body.classList.toggle('scenemode', ['home','team','story','free','gacha','combat','event'].includes(view));
  _wasP = isPortrait(); document.body.classList.toggle('portrait', _wasP);
  const app = document.getElementById('app');
  const f = {home:vHome, story:vStory, free:vFree, event:vEvent, gacha:vGacha, coll:vColl, team:vTeam, rules:vRules, combat:vCombat, dialog:vDialog}[view];
@@ -1550,21 +1559,31 @@ function vFree(){
 /* ---------- événement ---------- */
 function evState(id){ if(!S.events) S.events = {}; if(!S.events[id]) S.events[id] = {}; return S.events[id]; }
 const evDone = () => DATA.events.filter(E => evState(E.id).done).length;
+const EV_POS = [[30,72],[61,40],[81,12]], EV_COL = ['ev-g','ev-o','ev-r'];
+function evModal(i){
+ const E = DATA.events[i], done = evState(E.id).done, r = teamRarity(E.team);
+ const rew = `${E.gold} pièces + ${E.cards.length>1?'les '+E.cards.length+' cartes de l\'équipe':CARDS[E.cards[0]].nom+(E.cards[0].startsWith('L_')?' légendaire':'')}`;
+ modal(`<div class="evtag ${EV_COL[i]}">${esc(E.diff.toUpperCase())}</div><h2 style="font-size:32px;margin-top:6px">${esc(E.nom)}</h2>
+  <p>${esc(E.desc)}</p>
+  <div class="grid" style="grid-template-columns:repeat(${Math.min(E.team.length,3)},minmax(0,120px));margin:10px 0">${E.team.slice(0,6).map(k=>cardHTML(k,{attr:`data-card="${k}"`})).join('')}</div>
+  <div class="kv"><b>Adversaires</b> ${RNAME[r]} · niveau ${E.lvl||1}${E.hp&&E.hp!==1?' · PV +'+Math.round((E.hp-1)*100)+' %':''}</div>
+  <div class="kv"><b>Récompense</b> ${done?'déjà reçue ✓ (rejouer : +'+GAIN[r]/2+' pièces)':rew}</div>
+  <div class="row" style="margin-top:14px"><button class="btn gold" data-act="evfight" data-i="${i}">${done?'Rejouer':'Combattre'}</button><button class="btn sec" data-act="close">Fermer</button></div>`);
+}
 function vEvent(){
- const DC = {Facile:'#4caf6a', 'Intermédiaire':'#e0a020', Expert:'#d0402a'};
- const rows = DATA.events.map((E,i) => {
-  const done = evState(E.id).done, r = teamRarity(E.team);
-  const rew = done ? `Réussi ✓ · rejouer +${GAIN[r]/2} pièces` : `${E.gold} pièces + ${E.cards.length>1?'les '+E.cards.length+' cartes de l\'équipe':CARDS[E.cards[0]].nom+(E.cards[0].startsWith('L_')?' légendaire':'')}`;
-  return `<button class="evrow ${done?'done':''}" data-act="evfight" data-i="${i}">
-   <span class="evd" style="background:${DC[E.diff]||'#888'}">${esc(E.diff.toUpperCase())}</span>
-   <span class="av3">${E.team.slice(0,3).map(k=>`<i style="background-image:url('img/${k}.jpg')"></i>`).join('')}</span>
-   <span class="evt"><b class="fg">${esc(E.nom.toUpperCase())}</b><span>${esc(E.desc)}</span><span class="evlv">Adversaires : ${RNAME[r]} · niveau ${E.lvl||1}</span></span>
-   <span class="evr">${done?'':'Récompense<br>'}${rew}</span></button>`; }).join('');
- return `<div class="evwrap"><div class="evhead"><div class="evtag">ÉVÉNEMENTS</div><h1 class="fg">DÉFIS SPÉCIAUX</h1>
-  <p>Des combats uniques avec de grosses récompenses. Chaque récompense ne se gagne qu'une seule fois.</p>
-  <div class="evprog"><i style="width:${Math.round(evDone()/DATA.events.length*100)}%"></i><span>${evDone()} / ${DATA.events.length} événements réussis</span></div></div>
-  <div class="evlist">${rows}</div>
-  <p class="evnote">Une victoire rejouée rapporte la moitié du gain normal d'un combat, sans carte. Si tu possèdes déjà une carte gagnée, elle monte d'un niveau.</p></div>`;
+ const n = DATA.events.length, nd = evDone();
+ const mk = (E,i) => { const done = evState(E.id).done;
+  return `<button class="mk ev ${EV_COL[i]} ${done?'done':''}" ${isPortrait()?'':`style="left:${EV_POS[i][0]}%;top:${EV_POS[i][1]}%"`} data-act="evopen" data-i="${i}" aria-label="${esc(E.nom)}"><span class="md fg">${done?'✓':i+1}</span><span class="lb fg"><b>${esc(E.diff.toUpperCase())}</b><span>${esc(E.nom.toUpperCase())}</span><small>${done?'Réussi':`+${E.gold} pièces · ${E.cards.length>1?E.cards.length+' cartes':CARDS[E.cards[0]].nom+(E.cards[0].startsWith('L_')?' légendaire':'')}`}</small></span></button>`; };
+ if(isPortrait()) return `<div class="pscene pstory" style="background-image:url(img/ui_event.jpg)">
+  <div class="ptitle fg">ÉVÉNEMENTS</div>
+  <div class="ppath">${DATA.events.map(mk).reverse().join('')}</div>
+  <p class="pnote">${nd} / ${n} réussis. Chaque récompense ne se gagne qu'une fois ; une victoire rejouée rapporte la moitié du gain normal, sans carte.</p>
+ </div>`;
+ return `<div class="scene-wrap"><div class="scene" style="background-image:url(img/ui_event.jpg);--minw:760px">
+ <div class="scene-title fg">ÉVÉNEMENTS</div>
+ ${DATA.events.map(mk).join('')}
+ <div class="scene-note">${nd} / ${n} réussis. Touche une arène pour voir le défi. Chaque récompense ne se gagne qu'une fois ; une victoire rejouée rapporte la moitié du gain normal, sans carte.</div>
+ </div></div>`;
 }
 
 /* ---------- règles ---------- */
@@ -2085,7 +2104,8 @@ document.addEventListener('click', e => {
   case 'enter': homeStage = 'menu'; sfx('shimmer'); render(); break;
   case 'tmus': sndToggle('mus'); break;
   case 'tsfx': sndToggle('sfx'); break;
-  case 'evfight': { if(!S.team.length){ toast('Forme d\'abord ton équipe'); break; } startCombat({type:'event', i:+a.dataset.i}); break; }
+  case 'evopen': evModal(+a.dataset.i); break;
+  case 'evfight': closeModal(); { if(!S.team.length){ toast('Forme d\'abord ton équipe'); break; } startCombat({type:'event', i:+a.dataset.i}); break; }
   case 'retry': { const cx = C.ctx; C = null; startCombat(cx.type==='story' ? {type:'story', i:cx.i} : cx); break; }
   case 'pull': doPull(a.dataset.p); break;
   case 'popen': packOpen(); break;
