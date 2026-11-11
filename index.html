@@ -489,7 +489,7 @@ body.homemode .wrap{padding:0 10px 30px}
 @media (max-width:600px){.viewer{grid-template-columns:1fr}.vw-stage{width:220px}}
 
 /* ---------- versions portrait (téléphone) ---------- */
-.pscene{position:relative;margin:0 -10px;min-height:calc(100vh - 110px);padding:14px 12px 30px;background:#111 center top/cover no-repeat;display:flex;flex-direction:column;align-items:center;gap:12px}
+.pscene{position:relative;margin:0;min-height:calc(100vh - 110px);padding:14px 12px 30px;background:#111 center top/cover no-repeat;display:flex;flex-direction:column;align-items:center;gap:12px}
 .pscene::before{content:"";position:absolute;inset:0;background:linear-gradient(rgba(8,10,20,.35),rgba(8,10,20,.7));pointer-events:none}
 .pscene>*{position:relative}
 .ptitle{font-size:30px;color:#ffe6b0;letter-spacing:.06em;text-shadow:0 2px 8px #000}
@@ -514,6 +514,10 @@ body.homemode .wrap{padding:0 10px 30px}
 .mk.ev.done .md{filter:saturate(.6)}
 .evtag.ev-g{background:#4caf6a;color:#fff}.evtag.ev-o{background:#e0a020}.evtag.ev-r{background:#d0402a;color:#fff}
 .pstory .mk.ev .lb{align-items:flex-start}
+.pevent .ppath{width:100%;max-width:420px;gap:16px}
+.pevent .ppath::before{display:none}
+.pevent .mk,.pevent .mk:nth-child(even),.pevent .mk:nth-child(odd){transform:none!important;width:100%;justify-content:flex-start}
+.pevent .mk .lb{flex:1;max-width:none}
 .evbanner{display:flex;align-items:center;justify-content:center;gap:14px;flex-wrap:wrap;margin:10px auto 0;width:min(92%,760px);padding:12px 18px;border-radius:14px;border:2px solid #d8b450;cursor:pointer;color:#fff3d6;font:inherit;
  background:linear-gradient(rgba(20,10,40,.6),rgba(20,10,40,.85)),url(img/ui_gacha.jpg) center/cover;box-shadow:0 0 18px rgba(255,200,80,.35);animation:evpulse 2.4s ease-in-out infinite}
 .evbanner b{font-size:clamp(18px,2.6vw,26px);color:#ffe6b0;text-shadow:0 2px 4px #000}
@@ -559,12 +563,13 @@ body.homemode .wrap{padding:0 10px 30px}
 .pk-premium .pack img{filter:sepia(.35) saturate(1.6) brightness(1.08) drop-shadow(0 0 10px rgba(255,210,90,.9))}
 .pkopt.pk-premium .pkname{color:#ffd45a;text-shadow:0 0 10px rgba(255,200,60,.8),0 2px 4px #000}
 .pstory .ppath{position:relative;display:flex;flex-direction:column;align-items:center;gap:26px;padding:10px 0}
-.pstory .ppath::before{content:"";position:absolute;top:30px;bottom:30px;left:50%;border-left:3px dashed rgba(255,230,170,.7)}
-.pstory .mk{position:relative;transform:none;flex-direction:row;gap:10px;left:auto!important;top:auto!important}
+.pstory .ppath::before{content:"";position:absolute;z-index:0;top:30px;bottom:30px;left:50%;border-left:3px dashed rgba(255,230,170,.7)}
+.pstory .mk{position:relative;z-index:1;transform:none;flex-direction:row;gap:10px;left:auto!important;top:auto!important}
 .pstory .mk:nth-child(even){transform:translateX(-12%)}.pstory .mk:nth-child(odd){transform:translateX(12%)}.pstory .mk .lb{white-space:normal;max-width:52vw;text-align:left}
 .pstory .mk .md{width:56px;height:56px;font-size:26px;border-width:3px;box-shadow:0 4px 0 #5a3200,0 0 18px rgba(255,200,80,.5)}
 .pstory .mk.done .md{box-shadow:0 4px 0 #174a26}.pstory .mk.lock .md{box-shadow:0 4px 0 #222}
-.pstory .mk .lb{font-size:14px;padding:4px 10px;border-width:1px;border-radius:6px}
+.pstory .mk .lb{font-size:14px;padding:4px 10px;border-width:1px;border-radius:6px;background:rgb(18,20,32)}
+.pstory .mk.lock .lb{opacity:1;color:#aaa}
 .pfree{display:flex;flex-direction:column;gap:10px;width:100%;max-width:440px}
 .pfb{display:flex;align-items:center;gap:12px;background:rgba(14,16,26,.88);border:1px solid rgba(216,180,80,.75);border-radius:12px;padding:10px 12px;color:#fff3d6;cursor:pointer;text-align:left}
 .pfb .av3{display:flex;gap:4px}.pfb .av3 i{width:36px;height:36px;border-radius:50%;background:#333 center 15%/cover;border:2px solid #d8b450}
@@ -788,6 +793,8 @@ body.homemode .wrap{padding-top:env(safe-area-inset-top)}
 .fx .skip{top:calc(14px + env(safe-area-inset-top))}
 @media (max-width:760px){select{font-size:16px}}
 .arena,.pscene,.scene{max-width:100%}
+body.portrait.scenemode .wrap{padding-left:0;padding-right:0}
+body.portrait.scenemode .wrap>.panel{margin-left:10px;margin-right:10px}
 .card,.fighter,.pack,.isle,.quad{-webkit-tap-highlight-color:transparent;-webkit-touch-callout:none}
 
 /* ---------- correctif Safari : tailles fixes des cases de combat (évite la boucle de redimensionnement) ---------- */
@@ -879,7 +886,7 @@ const esc = s => String(s).replace(/[&<>"]/g, c => ({'&':'&amp;','<':'&lt;','>':
 const pick = a => a[Math.floor(Math.random()*a.length)];
 
 /* ---------- mise à jour automatique (app installée sur l'écran d'accueil) ---------- */
-const APP_VER = '1.3.3';
+const APP_VER = '1.3.4';
 async function checkUpdate(){
  if(location.protocol.indexOf('http')!==0 || location.hostname.indexOf('claude')>=0) return;
  try {
@@ -1574,7 +1581,7 @@ function vEvent(){
  const n = DATA.events.length, nd = evDone();
  const mk = (E,i) => { const done = evState(E.id).done;
   return `<button class="mk ev ${EV_COL[i]} ${done?'done':''}" ${isPortrait()?'':`style="left:${EV_POS[i][0]}%;top:${EV_POS[i][1]}%"`} data-act="evopen" data-i="${i}" aria-label="${esc(E.nom)}"><span class="md fg">${done?'✓':i+1}</span><span class="lb fg"><b>${esc(E.diff.toUpperCase())}</b><span>${esc(E.nom.toUpperCase())}</span><small>${done?'Réussi':`+${E.gold} pièces · ${E.cards.length>1?E.cards.length+' cartes':CARDS[E.cards[0]].nom+(E.cards[0].startsWith('L_')?' légendaire':'')}`}</small></span></button>`; };
- if(isPortrait()) return `<div class="pscene pstory" style="background-image:url(img/ui_event.jpg)">
+ if(isPortrait()) return `<div class="pscene pstory pevent" style="background-image:url(img/ui_event.jpg)">
   <div class="ptitle fg">ÉVÉNEMENTS</div>
   <div class="ppath">${DATA.events.map(mk).reverse().join('')}</div>
   <p class="pnote">${nd} / ${n} réussis. Chaque récompense ne se gagne qu'une fois ; une victoire rejouée rapporte la moitié du gain normal, sans carte.</p>
