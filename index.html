@@ -740,6 +740,25 @@ body.homemode .wrap{padding-top:env(safe-area-inset-top)}
 @keyframes readyp{50%{transform:translateY(-4px)}}
 @keyframes pulsep{50%{box-shadow:0 0 0 5px rgba(255,90,90,.5),0 0 20px rgba(255,90,90,.9)}}
 .ts-screen .sndbtns{top:calc(14px + env(safe-area-inset-top))!important}
+
+/* ---------- collection ---------- */
+.collx{max-width:1100px;margin:0 auto}
+.chero{text-align:center;padding:10px 0 6px}
+.chero h1{font-size:40px;color:#ffe6b0;letter-spacing:.08em;text-shadow:0 2px 8px #000}
+.cprog{height:12px;max-width:420px;margin:6px auto;border-radius:99px;background:rgba(0,0,0,.5);border:1px solid rgba(216,180,80,.7);overflow:hidden}
+.cprog i{display:block;height:100%;background:linear-gradient(90deg,#b8892a,#ffd75a)}
+.cstat{color:#fff3d6;font-size:14px;text-shadow:0 1px 3px #000}.cstat b{color:#ffd75a;font-size:18px}
+.chips{display:flex;gap:6px;flex-wrap:wrap;justify-content:center;margin-top:10px}
+.chip{background:rgba(14,16,26,.85);color:#fff3d6;border:1px solid rgba(216,180,80,.55);border-radius:99px;padding:7px 12px;font-size:13px;font-weight:700;cursor:pointer;min-height:36px}
+.chip.on{background:linear-gradient(#ffe27a,#f2b51e);color:#3a2400;border-color:#8a5a00}
+.csec{margin:18px 0;background:rgba(14,16,26,.82);border:1px solid rgba(216,180,80,.5);border-radius:14px;padding:12px}
+.chead{display:flex;align-items:center;gap:8px;margin-bottom:10px;color:#ffe6b0;font-size:20px;letter-spacing:.06em}
+.cnt2{margin-left:auto;font-size:13px;font-weight:700;color:#fff3d6;background:rgba(0,0,0,.4);border-radius:99px;padding:3px 10px}
+.cnt2.full{background:linear-gradient(#ffe27a,#f2b51e);color:#3a2400}
+.cgrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(130px,1fr));gap:12px}
+.cgrid .card.locked{filter:none;background:#111 !important}
+.cgrid .card.locked::before{content:"";position:absolute;inset:-6px;background:var(--art) center top/cover;filter:grayscale(1) brightness(.28) blur(3px)}
+@media (max-width:640px){.cgrid{grid-template-columns:repeat(3,minmax(0,1fr));gap:8px}.chero h1{font-size:32px}.chead{font-size:17px}.cgrid .card .nm{font-size:13px}.cgrid .card .pv{font-size:13px}.cgrid .card .bot{font-size:8px}}
 </style>
 </head>
 <body>
@@ -794,7 +813,7 @@ const esc = s => String(s).replace(/[&<>"]/g, c => ({'&':'&amp;','<':'&lt;','>':
 const pick = a => a[Math.floor(Math.random()*a.length)];
 
 /* ---------- mise à jour automatique (app installée sur l'écran d'accueil) ---------- */
-const APP_VER = '1.0.4';
+const APP_VER = '1.0.5';
 async function checkUpdate(){
  if(location.protocol.indexOf('http')!==0 || location.hostname.indexOf('claude')>=0) return;
  try {
@@ -1114,7 +1133,7 @@ document.addEventListener('pointerdown', () => { if(actx()) setMusic(view==='com
 
 /* ---------- navigation ---------- */
 let view = 'home';
-const TABS = [['home','Menu'],['team','Équipe'],['story','Histoire'],['gacha','Tirages'],['free','Combats libres'],['rules','Règles']];
+const TABS = [['home','Menu'],['coll','Collection'],['team','Équipe'],['story','Histoire'],['gacha','Tirages'],['free','Combats libres'],['rules','Règles']];
 function go(v){ view = v; C = null; window.scrollTo(0,0); render(); }
 function render(){
  document.getElementById('goldBox').textContent = '● ' + S.gold + ' pièces';
@@ -1144,7 +1163,7 @@ function vHome(){
  return `<div class="menu-bar"><img src="img/ui_logo.webp" alt="Vagabonds"><div style="display:flex;gap:8px;align-items:center"><div class="sndbtns"></div><div class="gold">● ${S.gold} pièces</div></div></div>
  ${!S.intro?`<p style="text-align:center;max-width:760px;margin:0 auto 10px;color:#fff;text-shadow:0 1px 3px #000">Pour commencer, tu as <b>1 500 pièces</b>, de quoi ouvrir 3 paquets. Tire tes premières cartes, forme ton équipe, puis lance l'arc Rencontre.</p>`:''}
  <div class="quads">${Q.map(([v,n,sub,l,tp,w,h]) => `<button class="quad" data-go="${v}" aria-label="${n}"><span class="pl fg engr" style="left:${l};top:${tp};width:${w};height:${h};${n.length>10?"font-size:3.1cqw":""}">${n}</span><span class="sb" style="top:calc(${tp} + ${h} + 1.5%)">${esc(sub)}</span></button>`).join('')}</div>
- <div class="menu-foot"><button class="btn sec sm" data-go="rules">Règles</button><button class="btn sec sm" data-act="savebox">Sauvegarde</button><button class="btn sec sm" data-act="reset">Nouvelle partie</button></div>`;
+ <div class="menu-foot"><button class="btn gold sm" data-go="coll">Collection</button><button class="btn sec sm" data-go="rules">Règles</button><button class="btn sec sm" data-act="savebox">Sauvegarde</button><button class="btn sec sm" data-act="reset">Nouvelle partie</button></div>`;
 }
 
 /* ---------- tirage ---------- */
@@ -1299,12 +1318,20 @@ function vGacha(){
 /* ---------- collection ---------- */
 let collFilter = 'all';
 function vColl(){
- const list = DATA.cards.filter(c => collFilter==='all' || c.r===collFilter || (collFilter==='stade' && c.kind==='stade'));
- const n = DATA.cards.filter(c => own(c.k)).length;
- return `<div class="panel"><div class="chap"><h1 style="font-size:40px">Collection · ${n}/${DATA.cards.length}</h1>
- <select data-act="filter" aria-label="Filtrer">${[['all','Toutes'],['commune','Communes'],['rare','Rares'],['ultra','Ultra rares'],['legend','Légendaires'],['stade','Stades']].map(([v,n])=>`<option value="${v}" ${collFilter===v?'selected':''}>${n}</option>`).join('')}</select></div>
- <p class="muted">Touche une carte pour voir ses stats.</p>
- <div class="grid sm">${list.map(c => cardHTML(c.k,{locked:!own(c.k),showOwn:1,attr:`data-card="${c.k}"`})).join('')}</div></div>`;
+ const n = DATA.cards.filter(c => own(c.k)).length, tot = DATA.cards.length;
+ const F = [['all','Toutes'],['owned','Obtenues'],['missing','Manquantes'],['commune','Communes'],['rare','Rares'],['ultra','Ultra rares'],['legend','Légendaires'],['stade','Stades']];
+ const ok = c => collFilter==='all' || (collFilter==='owned' && own(c.k)) || (collFilter==='missing' && !own(c.k)) || (collFilter==='stade' ? c.kind==='stade' : c.r===collFilter);
+ const groups = [];
+ DATA.cards.forEach(c => { const g = c.kind==='stade' ? 'Stades' : c.team; let G = groups.find(x => x.name===g); if(!G){ G = {name:g, cards:[]}; groups.push(G); } G.cards.push(c); });
+ const secs = groups.map(G => { const vis = G.cards.filter(ok); if(!vis.length) return '';
+  const got = G.cards.filter(c => own(c.k)).length, camp = DATA.camp[G.name];
+  return `<section class="csec"><div class="chead"><span class="fg">${esc(G.name.toUpperCase())}</span>${camp?campIcon(camp,18):''}<span class="cnt2 ${got===G.cards.length?'full':''}">${got}/${G.cards.length}</span></div>
+   <div class="cgrid">${vis.map(c => cardHTML(c.k,{locked:!own(c.k),showOwn:1,attr:`data-card="${c.k}"`})).join('')}</div></section>`; }).join('');
+ return `<div class="collx"><div class="chero"><h1 class="fg">COLLECTION</h1>
+  <div class="cprog"><i style="width:${Math.round(n/tot*100)}%"></i></div><div class="cstat"><b>${n}</b> / ${tot} cartes · ${Math.round(n/tot*100)} %</div>
+  <div class="chips">${F.map(([v,l]) => `<button class="chip ${collFilter===v?'on':''}" data-act="cfilter" data-f="${v}">${l}</button>`).join('')}</div>
+  <p class="muted" style="margin:6px 0 0">Touche une carte pour l'ouvrir en grand, la tourner en 3D et passer aux suivantes.</p></div>
+  ${secs || '<p class="pnote" style="margin:20px auto">Aucune carte dans cette catégorie.</p>'}</div>`;
 }
 
 /* ---------- équipe ---------- */
@@ -1911,6 +1938,7 @@ document.addEventListener('click', e => {
   case 'vwflip': VW.spin = false; VW.vy = 0; VW.ry = Math.round(VW.ry/180)*180 + 180; sfx('swoosh'); { const c = document.getElementById('vwCard'); if(c){ c.style.transition = 'transform .6s cubic-bezier(.3,1.3,.5,1)'; vwApply(); setTimeout(() => c.style.transition = '', 620); } } break;
   case 'vwspin': VW.spin = !VW.spin; a.classList.toggle('on', VW.spin); break;
   case 'savebox': saveBox(); break;
+  case 'cfilter': collFilter = a.dataset.f; render(); break;
   case 'savecopy': { const ta = document.getElementById('saveCode'); ta.select(); try{ navigator.clipboard ? navigator.clipboard.writeText(ta.value).then(() => toast('Code copié')) : (document.execCommand('copy'), toast('Code copié')); }catch(e){ document.execCommand('copy'); toast('Code copié'); } break; }
   case 'saveload': { const v = (document.getElementById('loadCode').value||'').trim(); const er = document.getElementById('loadErr');
    if(!v){ er.textContent = 'Colle d\'abord un code.'; break; }
