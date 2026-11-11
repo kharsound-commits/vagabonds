@@ -793,6 +793,24 @@ function campIcon(camp, s){
 const esc = s => String(s).replace(/[&<>"]/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
 const pick = a => a[Math.floor(Math.random()*a.length)];
 
+/* ---------- mise à jour automatique (app installée sur l'écran d'accueil) ---------- */
+const APP_VER = '1.0.4';
+async function checkUpdate(){
+ if(location.protocol.indexOf('http')!==0 || location.hostname.indexOf('claude')>=0) return;
+ try {
+  const r = await fetch('version.json?t=' + Date.now(), {cache:'no-store'}); if(!r.ok) return;
+  const v = (await r.json()).version;
+  if(v && v !== APP_VER){
+   if(sessionStorage.getItem('vg_upd')===v) return; // évite une boucle si le cache résiste
+   sessionStorage.setItem('vg_upd', v);
+   try{ save(); }catch(e){}
+   toast('Nouvelle version ' + v + ' : mise à jour…');
+   setTimeout(() => location.replace(location.pathname + '?v=' + encodeURIComponent(v)), 900);
+  }
+ } catch(e) {}
+}
+window.addEventListener('load', () => setTimeout(checkUpdate, 800));
+document.addEventListener('visibilitychange', () => { if(document.visibilityState==='visible') checkUpdate(); });
 /* ---------- sauvegarde ---------- */
 const SKEY = 'vagabonds_save_v1';
 function newSave(){ return {v:2, gold:1500, owned:{}, team:[], story:{done:{}, zoe:false}, freeWins:{}, intro:false, t:Date.now()}; }
@@ -918,6 +936,17 @@ document.addEventListener('pointerup', () => { if(VW.drag){ VW.drag = null; VW.d
 document.addEventListener('keydown', e => { if(!document.getElementById('vwCard')) return; if(e.key==='ArrowRight') vwGo(1); else if(e.key==='ArrowLeft') vwGo(-1); else if(e.key==='Escape') closeModal(); });
 function modal(html){ document.getElementById('modalRoot').innerHTML = `<div class="modal" data-act="bg"><div class="box">${html}</div></div>`; if(document.getElementById('vwCard')) vwStart(); }
 function closeModal(){ document.getElementById('modalRoot').innerHTML = ''; }
+function saveBox(){
+ const code = btoa(unescape(encodeURIComponent(JSON.stringify(S))));
+ modal(`<h2 style="font-size:30px">Sauvegarde</h2>
+ <p class="muted">Pour transférer ta partie (de Safari vers l'app, ou d'un appareil à un autre) : copie ce code, puis colle-le dans « Charger » sur l'autre appareil.</p>
+ <textarea id="saveCode" readonly style="width:100%;height:90px;font-size:12px;background:#0d1220;color:#e9e1cf;border:1px solid rgba(216,180,80,.6);border-radius:8px;padding:8px">${code}</textarea>
+ <div class="row" style="margin-top:8px"><button class="btn gold sm" data-act="savecopy">Copier mon code</button></div>
+ <p class="muted" style="margin-top:14px">Charger une partie (remplace la partie actuelle) :</p>
+ <textarea id="loadCode" placeholder="Colle ton code ici" style="width:100%;height:70px;font-size:16px;background:#0d1220;color:#e9e1cf;border:1px solid rgba(216,180,80,.6);border-radius:8px;padding:8px"></textarea>
+ <div id="loadErr" style="color:#ff8a7a;font-size:13px;min-height:18px"></div>
+ <div class="row" style="margin-top:6px"><button class="btn sm" data-act="saveload">Charger</button><button class="btn sec sm" data-act="close">Fermer</button></div>`);
+}
 function toast(t){ const d = document.createElement('div'); d.className='toast'; d.textContent=t; document.body.appendChild(d); setTimeout(()=>d.remove(),2200); }
 
 
@@ -1105,7 +1134,7 @@ let homeStage = 'title';
 function vHome(){
  const emb = Array.from({length:26},(_,i)=>`<i style="--x:${(i*37)%100}%;--s:${2+(i*7)%4}px;--t:${7+(i*13)%8}s;--d:-${(i*11)%9}s;--dx:${((i*29)%80)-40}px"></i>`).join('');
  if(homeStage==='title') return `<div class="ts-screen" data-act="enter" role="button" aria-label="Entrer dans le jeu"><div class="embers">${emb}</div>
-  <div class="sndbtns" style="position:absolute;top:14px;right:14px;z-index:2"></div><div class="ts-in"><div class="welcome">BIENVENUE DANS</div><img class="ts-logo" src="img/ui_logo.webp" alt="Vagabonds"><div class="press">TOUCHE L'ÉCRAN POUR COMMENCER</div></div><div class="ver">Version 1.0.3</div></div>`;
+  <div class="sndbtns" style="position:absolute;top:14px;right:14px;z-index:2"></div><div class="ts-in"><div class="welcome">BIENVENUE DANS</div><img class="ts-logo" src="img/ui_logo.webp" alt="Vagabonds"><div class="press">TOUCHE L'ÉCRAN POUR COMMENCER</div></div><div class="ver">Version ${APP_VER}</div></div>`;
  const nxt = FIGHTS.findIndex(F => !S.story.done[F.key]);
  const arcName = nxt<0 ? 'Histoire terminée' : 'Arc '+(FIGHTS[nxt].a+1)+' · '+DATA.story[FIGHTS[nxt].a].t;
  const Q = [['team','ÉQUIPE',`${S.team.length}/6 persos · ${Object.keys(S.owned).length} cartes`,'36%','62%','31%','11%'],
@@ -1115,7 +1144,7 @@ function vHome(){
  return `<div class="menu-bar"><img src="img/ui_logo.webp" alt="Vagabonds"><div style="display:flex;gap:8px;align-items:center"><div class="sndbtns"></div><div class="gold">● ${S.gold} pièces</div></div></div>
  ${!S.intro?`<p style="text-align:center;max-width:760px;margin:0 auto 10px;color:#fff;text-shadow:0 1px 3px #000">Pour commencer, tu as <b>1 500 pièces</b>, de quoi ouvrir 3 paquets. Tire tes premières cartes, forme ton équipe, puis lance l'arc Rencontre.</p>`:''}
  <div class="quads">${Q.map(([v,n,sub,l,tp,w,h]) => `<button class="quad" data-go="${v}" aria-label="${n}"><span class="pl fg engr" style="left:${l};top:${tp};width:${w};height:${h};${n.length>10?"font-size:3.1cqw":""}">${n}</span><span class="sb" style="top:calc(${tp} + ${h} + 1.5%)">${esc(sub)}</span></button>`).join('')}</div>
- <div class="menu-foot"><button class="btn sec sm" data-go="rules">Règles</button><button class="btn sec sm" data-act="reset">Nouvelle partie</button></div>`;
+ <div class="menu-foot"><button class="btn sec sm" data-go="rules">Règles</button><button class="btn sec sm" data-act="savebox">Sauvegarde</button><button class="btn sec sm" data-act="reset">Nouvelle partie</button></div>`;
 }
 
 /* ---------- tirage ---------- */
@@ -1881,6 +1910,12 @@ document.addEventListener('click', e => {
   case 'vwnext': vwGo(1); break;
   case 'vwflip': VW.spin = false; VW.vy = 0; VW.ry = Math.round(VW.ry/180)*180 + 180; sfx('swoosh'); { const c = document.getElementById('vwCard'); if(c){ c.style.transition = 'transform .6s cubic-bezier(.3,1.3,.5,1)'; vwApply(); setTimeout(() => c.style.transition = '', 620); } } break;
   case 'vwspin': VW.spin = !VW.spin; a.classList.toggle('on', VW.spin); break;
+  case 'savebox': saveBox(); break;
+  case 'savecopy': { const ta = document.getElementById('saveCode'); ta.select(); try{ navigator.clipboard ? navigator.clipboard.writeText(ta.value).then(() => toast('Code copié')) : (document.execCommand('copy'), toast('Code copié')); }catch(e){ document.execCommand('copy'); toast('Code copié'); } break; }
+  case 'saveload': { const v = (document.getElementById('loadCode').value||'').trim(); const er = document.getElementById('loadErr');
+   if(!v){ er.textContent = 'Colle d\'abord un code.'; break; }
+   try{ const o = JSON.parse(decodeURIComponent(escape(atob(v)))); if(!o || typeof o.gold!=='number' || !o.owned) throw 0; S = migrate(o); save(); closeModal(); toast('Partie chargée'); render(); }
+   catch(e){ er.textContent = 'Ce code ne fonctionne pas. Vérifie qu\'il est complet.'; } break; }
   case 'enter': homeStage = 'menu'; sfx('shimmer'); render(); break;
   case 'tmus': sndToggle('mus'); break;
   case 'tsfx': sndToggle('sfx'); break;
