@@ -715,7 +715,8 @@ body.homemode .wrap{padding:0 10px 30px}
 @media (prefers-reduced-motion:reduce){.card .stars b,.card .zaps path{animation:none!important;opacity:0}}
 
 /* ---------- correctifs téléphone ---------- */
-html,body{overflow-x:hidden;touch-action:manipulation;-webkit-text-size-adjust:100%;overscroll-behavior-x:none}
+*,*::before,*::after{touch-action:manipulation}
+html,body{overflow-x:hidden;-webkit-text-size-adjust:100%;overscroll-behavior-x:none}
 header.top{padding-top:env(safe-area-inset-top)}
 .ts-screen{padding-top:env(safe-area-inset-top);padding-bottom:env(safe-area-inset-bottom)}
 body.homemode .wrap{padding-top:env(safe-area-inset-top)}
@@ -1090,7 +1091,7 @@ let homeStage = 'title';
 function vHome(){
  const emb = Array.from({length:26},(_,i)=>`<i style="--x:${(i*37)%100}%;--s:${2+(i*7)%4}px;--t:${7+(i*13)%8}s;--d:-${(i*11)%9}s;--dx:${((i*29)%80)-40}px"></i>`).join('');
  if(homeStage==='title') return `<div class="ts-screen" data-act="enter" role="button" aria-label="Entrer dans le jeu"><div class="embers">${emb}</div>
-  <div class="sndbtns" style="position:absolute;top:14px;right:14px;z-index:2"></div><div class="ts-in"><div class="welcome">BIENVENUE DANS</div><img class="ts-logo" src="img/ui_logo.webp" alt="Vagabonds"><div class="press">TOUCHE L'ÉCRAN POUR COMMENCER</div></div><div class="ver">Version 1.0</div></div>`;
+  <div class="sndbtns" style="position:absolute;top:14px;right:14px;z-index:2"></div><div class="ts-in"><div class="welcome">BIENVENUE DANS</div><img class="ts-logo" src="img/ui_logo.webp" alt="Vagabonds"><div class="press">TOUCHE L'ÉCRAN POUR COMMENCER</div></div><div class="ver">Version 1.0.2</div></div>`;
  const nxt = FIGHTS.findIndex(F => !S.story.done[F.key]);
  const arcName = nxt<0 ? 'Histoire terminée' : 'Arc '+(FIGHTS[nxt].a+1)+' · '+DATA.story[FIGHTS[nxt].a].t;
  const Q = [['team','ÉQUIPE',`${S.team.length}/6 persos · ${Object.keys(S.owned).length} cartes`,'36%','62%','31%','11%'],
@@ -1787,7 +1788,7 @@ function afterCombatRender(){
      later(() => { const c = fEl(ev.f); c && (c.querySelector('.fcard')||c).animate([
        {transform:'none', filter:'none'},
        {transform:`translate(${-dx*.06}px,${-dy*.06 + 8*back}px) rotate(${-6*back}deg) scale(.95)`, offset:.22},
-       {transform:`translate(${dx*.78}px,${dy*.78}px) rotate(${4*back}deg) scale(1.18)`, filter:'brightness(1.4)', offset:.55},
+       {transform:`translate(${dx*.78}px,${dy*.78}px) rotate(${4*back}deg) scale(${document.body.classList.contains('portrait')?1.04:1.18})`, filter:'brightness(1.4)', offset:.55},
        {transform:`translate(${dx*.7}px,${dy*.7}px) scale(1.1)`, offset:.62},
        {transform:'none', filter:'none'}], {duration:640, easing:'cubic-bezier(.45,0,.2,1)'});
       const tr = fxAdd('trail', 0, 0); if(tr){ tr.remove(); } }, base);
