@@ -726,6 +726,20 @@ body.homemode .wrap{padding-top:env(safe-area-inset-top)}
 @media (max-width:760px){select{font-size:16px}}
 .arena,.pscene,.scene{max-width:100%}
 .card,.fighter,.pack,.isle,.quad{-webkit-tap-highlight-color:transparent;-webkit-touch-callout:none}
+
+/* ---------- correctif Safari : tailles fixes des cases de combat (évite la boucle de redimensionnement) ---------- */
+.portrait .prow{grid-template-columns:repeat(4,minmax(0,1fr))}
+.portrait .pslot2{position:relative;width:100%;min-width:0;height:auto;aspect-ratio:2/3;contain:layout size}
+.portrait .pslot2>.fighter,.portrait .pslot2>.rcase{position:absolute;inset:0;width:auto;height:auto;aspect-ratio:auto}
+.portrait .fcard{position:absolute;inset:0;width:auto;height:auto;aspect-ratio:auto}
+.portrait .fcard .card{position:absolute;inset:0;width:auto;height:auto;aspect-ratio:auto}
+.portrait .pst{contain:layout}.portrait .pst .card{width:100%;height:auto;aspect-ratio:2/3}
+.portrait .fighter.can .fcard{animation:readyp 1.6s ease-in-out infinite;box-shadow:0 0 0 3px #6fe38a,0 0 12px rgba(111,227,138,.7)}
+.portrait .fighter.sel .fcard{transform:translateY(-6px);box-shadow:0 0 0 3px #ffd75a,0 0 16px #ffd75a}
+.portrait .fighter.tgt .fcard{animation:pulsep 1s infinite;box-shadow:0 0 0 3px #ff5b5b,0 0 12px rgba(255,90,90,.8)}
+@keyframes readyp{50%{transform:translateY(-4px)}}
+@keyframes pulsep{50%{box-shadow:0 0 0 5px rgba(255,90,90,.5),0 0 20px rgba(255,90,90,.9)}}
+.ts-screen .sndbtns{top:calc(14px + env(safe-area-inset-top))!important}
 </style>
 </head>
 <body>
@@ -1091,7 +1105,7 @@ let homeStage = 'title';
 function vHome(){
  const emb = Array.from({length:26},(_,i)=>`<i style="--x:${(i*37)%100}%;--s:${2+(i*7)%4}px;--t:${7+(i*13)%8}s;--d:-${(i*11)%9}s;--dx:${((i*29)%80)-40}px"></i>`).join('');
  if(homeStage==='title') return `<div class="ts-screen" data-act="enter" role="button" aria-label="Entrer dans le jeu"><div class="embers">${emb}</div>
-  <div class="sndbtns" style="position:absolute;top:14px;right:14px;z-index:2"></div><div class="ts-in"><div class="welcome">BIENVENUE DANS</div><img class="ts-logo" src="img/ui_logo.webp" alt="Vagabonds"><div class="press">TOUCHE L'ÉCRAN POUR COMMENCER</div></div><div class="ver">Version 1.0.2</div></div>`;
+  <div class="sndbtns" style="position:absolute;top:14px;right:14px;z-index:2"></div><div class="ts-in"><div class="welcome">BIENVENUE DANS</div><img class="ts-logo" src="img/ui_logo.webp" alt="Vagabonds"><div class="press">TOUCHE L'ÉCRAN POUR COMMENCER</div></div><div class="ver">Version 1.0.3</div></div>`;
  const nxt = FIGHTS.findIndex(F => !S.story.done[F.key]);
  const arcName = nxt<0 ? 'Histoire terminée' : 'Arc '+(FIGHTS[nxt].a+1)+' · '+DATA.story[FIGHTS[nxt].a].t;
  const Q = [['team','ÉQUIPE',`${S.team.length}/6 persos · ${Object.keys(S.owned).length} cartes`,'36%','62%','31%','11%'],
