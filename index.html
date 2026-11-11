@@ -813,7 +813,7 @@ const esc = s => String(s).replace(/[&<>"]/g, c => ({'&':'&amp;','<':'&lt;','>':
 const pick = a => a[Math.floor(Math.random()*a.length)];
 
 /* ---------- mise à jour automatique (app installée sur l'écran d'accueil) ---------- */
-const APP_VER = '1.1.0';
+const APP_VER = '1.1.1';
 async function checkUpdate(){
  if(location.protocol.indexOf('http')!==0 || location.hostname.indexOf('claude')>=0) return;
  try {
@@ -1541,6 +1541,7 @@ function spState(f){
  if(f.cd>=90) return 'Déjà utilisée';
  if(f.cd>0) return `Recharge : ${f.cd} tour${f.cd>1?'s':''}`;
  if(f.silence) return 'Bloquée';
+ if(sp.t==='shield1' && !alive(f.side).some(x => x!==f)) return 'Aucun allié à protéger';
  return null;
 }
 function atkVal(f){
@@ -1678,7 +1679,7 @@ function enemyPhase(){
    const t = mode==='sp' ? needsTarget(f.c.sp.t) : 'enemy';
    let tgt = null;
    if(t==='enemy'){ const opts = targetable('p'); tgt = opts.find(o => BEATS[f.c.el]===o.c.el) || opts.sort((a,b)=>a.hp-b.hp)[0]; }
-   else if(t==='ally') tgt = lowest('e');
+   else if(t==='ally') tgt = f.c.sp.t==='shield1' ? alive('e').filter(x => x!==f).sort((a,b)=>a.hp/a.max-b.hp/b.max)[0] : lowest('e');
    if(t && !tgt) mode = 'atk', tgt = targetable('p')[0];
    if(tgt || !t) doAction(f, mode, tgt);
   }
@@ -1687,10 +1688,10 @@ function enemyPhase(){
  };
  setTimeout(step, 500);
 }
-function finish(win){
+function finish(win, fled){
  C.over = win ? 'win' : 'lose'; C.busy = false;
- if(Date.now() < (C.animUntil||0) && !C._finWait){ C._finWait = true; C.over = null; C.busy = true; setTimeout(() => { C.busy = false; finish(win); }, animWait(200)); return; }
- const ctx = C.ctx; let gain = 20, msg = '';
+ if(Date.now() < (C.animUntil||0) && !C._finWait){ C._finWait = true; C.over = null; C.busy = true; setTimeout(() => { C.busy = false; finish(win, fled); }, animWait(200)); return; }
+ const ctx = C.ctx; let gain = fled ? 0 : 20, msg = '';
  if(win){
   gain = GAIN[C.rar];
   if(ctx.type==='story'){
@@ -1728,7 +1729,7 @@ function fighterHTML(f, i){
  if(f.dead && f._koFresh) f._koFresh = false; else if(f.dead) cls += ' dead';
  else if(side==='p' && C.phase==='p' && !C.over){
   if(C.sel===f) cls += ' sel';
-  else if(C.mode && needsTargetFor()==='ally') cls += ' tgt';
+  else if(C.mode && needsTargetFor()==='ally' && !(C.sel && C.sel.c.sp.t==='shield1' && C.sel===f)) cls += ' tgt';
   else if(canAct(f)) cls += ' can'; else cls += ' done';
  }
  if(side==='e' && C.mode && needsTargetFor()==='enemy' && targetable('e').includes(f)) cls += ' tgt';
@@ -1914,7 +1915,7 @@ function playerClickFighter(id){
  const side = id[0], f = C[side][+id.slice(1)];
  const need = needsTargetFor();
  if(need){
-  if((need==='enemy' && side==='e' && targetable('e').includes(f)) || (need==='ally' && side==='p' && !f.dead)){
+  if((need==='enemy' && side==='e' && targetable('e').includes(f)) || (need==='ally' && side==='p' && !f.dead && !(C.mode==='sp' && C.sel.c.sp.t==='shield1' && f===C.sel))){
    doAction(C.sel, C.mode, f); C.sel = null; C.mode = null;
    if(checkEnd()) return;
    if(!C.p.some(canAct)){ render(); endPhase('p'); setTimeout(enemyPhase, animWait(400)); return; }
@@ -1983,7 +1984,7 @@ document.addEventListener('click', e => {
   case 'sp': chooseMode('sp'); break;
   case 'cancel': C.sel = null; C.mode = null; render(); break;
   case 'endturn': C.sel = null; C.mode = null; endPhase('p'); enemyPhase(); break;
-  case 'flee': finish(false); break;
+  case 'flee': finish(false, true); break;
   case 'cend': afterCombat(); break;
   case 'reset': modal(`<h2 style="font-size:30px">Recommencer ?</h2><p>Ta collection, tes pièces et ta progression seront effacées.</p><div class="row"><button class="btn" data-act="reset2">Oui, recommencer</button><button class="btn sec" data-act="close">Annuler</button></div>`); break;
   case 'reset2': S = newSave(); lastPull = null; save(); closeModal(); go('home'); break;
