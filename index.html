@@ -577,13 +577,13 @@ body.homemode .wrap{padding:0 10px 30px}
 .evnote{margin-top:12px;color:#fff3d6;text-shadow:0 1px 3px #000;font-size:13px;text-align:center}
 @media (max-width:600px){.evrow{flex-wrap:wrap;gap:8px}.evd{writing-mode:horizontal-tb;transform:none;flex-basis:100%;text-align:center}.evrow .av3 i{width:30px;height:42px}.evr{max-width:100%;flex-basis:100%;text-align:left}.evt b{font-size:17px}}
 .pkrow{position:absolute;left:4%;right:4%;top:13%;display:flex;justify-content:space-around;align-items:flex-start;gap:2cqw}
-.pkrow .pkopt{width:24%;display:flex;flex-direction:column;align-items:center;gap:.8cqw;text-align:center}
+.pkrow .pkopt{width:22%;display:flex;flex-direction:column;align-items:center;gap:.8cqw;text-align:center}
 .pkrow .pack-btn{width:62%}
 .pkname{font-size:2.6cqw;color:#ffe6b0;letter-spacing:.06em;text-shadow:0 0 6px #000,0 2px 4px #000,0 0 14px rgba(0,0,0,.9)}
 .pkrow .btn{font-size:1.5cqw;padding:.6cqw 1.8cqw;min-height:0}
 .pkinfo{font-size:1.15cqw;line-height:1.35;color:#fff3d6;background:rgba(10,12,22,.78);border:1px solid rgba(216,180,80,.55);border-radius:8px;padding:.6cqw .8cqw}
 .pkinfo span{opacity:.85;font-size:.95em}
-.pkrow.p{position:static;display:grid;grid-template-columns:repeat(3,1fr);gap:8px;width:100%;max-width:420px}
+.pkrow.p{position:static;display:grid;grid-template-columns:repeat(2,1fr);gap:8px;width:100%;max-width:420px}
 .pkrow.p .pkopt{width:auto;gap:6px}
 .pkrow.p .pack-btn{width:80%}
 .pkrow.p .pkname{font-size:18px}
@@ -592,6 +592,10 @@ body.homemode .wrap{padding:0 10px 30px}
 .pk-classique .pack img{filter:saturate(.55) brightness(.92)}
 .pk-avance .pack img{filter:hue-rotate(185deg) saturate(1.25)}
 .pk-premium .pack img{filter:sepia(.35) saturate(1.6) brightness(1.08) drop-shadow(0 0 10px rgba(255,210,90,.9))}
+.pk-golden .pack img{filter:sepia(1) saturate(3.2) hue-rotate(-8deg) brightness(1.2) contrast(1.05) drop-shadow(0 0 14px rgba(255,215,90,1))}
+.pkopt.pk-golden .pack-btn{animation:goldglow 1.8s ease-in-out infinite}
+@keyframes goldglow{0%,100%{filter:drop-shadow(0 0 6px rgba(255,210,80,.6))}50%{filter:drop-shadow(0 0 22px rgba(255,230,120,1))}}
+.pkopt.pk-golden .pkname{color:#fff1a8;text-shadow:0 0 14px rgba(255,215,60,1),0 0 4px #b8860b,0 2px 4px #000}
 .pkopt.pk-premium .pkname{color:#ffd45a;text-shadow:0 0 10px rgba(255,200,60,.8),0 2px 4px #000}
 .pstory .ppath{position:relative;display:flex;flex-direction:column;align-items:center;gap:26px;padding:10px 0}
 .pstory .ppath::before{content:"";position:absolute;z-index:0;top:30px;bottom:30px;left:50%;border-left:3px dashed rgba(255,230,170,.7)}
@@ -918,7 +922,7 @@ const esc = s => String(s).replace(/[&<>"]/g, c => ({'&':'&amp;','<':'&lt;','>':
 const pick = a => a[Math.floor(Math.random()*a.length)];
 
 /* ---------- mise à jour automatique (app installée sur l'écran d'accueil) ---------- */
-const APP_VER = '1.15.0';
+const APP_VER = '1.16.0';
 async function checkUpdate(){
  if(location.protocol.indexOf('http')!==0 || location.hostname.indexOf('claude')>=0) return;
  try {
@@ -1315,7 +1319,7 @@ function vHome(){
  const arcName = nxt<0 ? 'Histoire terminée' : 'Arc '+(FIGHTS[nxt].a+1)+' · '+DATA.story[FIGHTS[nxt].a].t;
  const Q = [['team','ÉQUIPE',`${S.team.length}/6 persos · ${Object.keys(S.owned).length} cartes`,'36%','62%','31%','11%'],
   ['story','HISTOIRE',arcName,'34%','62%','30%','11%'],
-  ['gacha','TIRAGES','3 paquets, dès 200 pièces','36%','51%','31%','11%'],
+  ['gacha','TIRAGES','4 paquets, dès 200 pièces','36%','51%','31%','11%'],
   ['free','COMBATS LIBRES','Affronte toutes les équipes','34%','51%','30%','11%']];
  return `<div class="menu-bar"><img src="img/ui_logo.webp" alt="Vagabonds"><div style="display:flex;gap:8px;align-items:center"><div class="sndbtns"></div>${lvlBadge()}<div class="gold">● ${S.gold} pièces</div></div></div>
  ${!S.intro?`<p style="text-align:center;max-width:760px;margin:0 auto 10px;color:#fff;text-shadow:0 1px 3px #000">Pour commencer, tu as <b>1 500 pièces</b>, de quoi ouvrir plusieurs paquets. Tire tes premières cartes, forme ton équipe, puis lance l'arc Rencontre.</p>`:''}
@@ -1335,6 +1339,8 @@ const PACKS = {
   txt:'<b>1 commune</b> et <b>2 rares ou mieux</b>', pct:'chaque carte rare ou mieux : rare 80 %, ultra rare 17 %, légendaire 3 %'},
  premium: {nom:'Paquet Premium', prix:3000, slots:[{ultra:.91, legend:.08, mythic:.01}],
   txt:'<b>1 seule carte</b>, ultra rare ou mieux garantie', pct:'ultra rare 91 %, légendaire 8 %, ultra légendaire 1 %'},
+ golden: {nom:'Paquet Golden', prix:8000, slots:[{legend:.95, mythic:.05}],
+  txt:'<b>1 seule carte</b>, légendaire ou mieux garantie', pct:'légendaire 95 %, ultra légendaire 5 %'},
 };
 function rollSlot(sl){
  let r = Math.random(), rar = 'commune';
@@ -1476,16 +1482,16 @@ function vGacha(){
    <div class="pkname fg">${P.nom.replace('Paquet ','').toUpperCase()}</div>
    <button class="btn gold sm" data-act="pull" data-p="${id}" ${no?'disabled':''}>${P.prix} pièces</button>
    <div class="pkinfo">${P.txt}<br><span>${P.pct}</span></div></div>`; };
- const ids = ['classique','avance','premium'];
+ const ids = ['classique','avance','premium','golden'];
  if(isPortrait()) return `<div class="pscene" style="background-image:url(img/ui_gacha.jpg)">
   <div class="ptitle fg">TIRAGES</div>
   <div class="pkrow p">${ids.map(packBtn).join('')}</div>
-  <p class="pnote">Classique et Avancé : 3 cartes. Premium : 1 carte. Un doublon se vend selon sa rareté (10 à 1000 pièces), ou fait monter la carte d'un niveau (PV, attaque et spéciale).</p>
+  <p class="pnote">Classique et Avancé : 3 cartes. Premium et Golden : 1 carte. Un doublon se vend selon sa rareté (10 à 1000 pièces), ou fait monter la carte d'un niveau (PV, attaque et spéciale).</p>
  </div>${res}`;
  return `<div class="scene-wrap"><div class="scene" style="background-image:url(img/ui_gacha.jpg);--minw:760px">
  <div class="scene-title fg">TIRAGES</div>
  <div class="pkrow">${ids.map(packBtn).join('')}</div>
- <div class="scene-note" style="left:auto;right:1.5cqw">Classique et Avancé : 3 cartes. Premium : 1 carte. Un doublon se vend selon sa rareté (10 à 1000 pièces), ou fait monter la carte d'un niveau (PV, attaque et spéciale).</div>
+ <div class="scene-note" style="left:auto;right:1.5cqw">Classique et Avancé : 3 cartes. Premium et Golden : 1 carte. Un doublon se vend selon sa rareté (10 à 1000 pièces), ou fait monter la carte d'un niveau (PV, attaque et spéciale).</div>
  </div></div>${res}`;
 }
 
