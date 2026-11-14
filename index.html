@@ -912,7 +912,7 @@ const esc = s => String(s).replace(/[&<>"]/g, c => ({'&':'&amp;','<':'&lt;','>':
 const pick = a => a[Math.floor(Math.random()*a.length)];
 
 /* ---------- mise à jour automatique (app installée sur l'écran d'accueil) ---------- */
-const APP_VER = '1.11.0';
+const APP_VER = '1.12.0';
 async function checkUpdate(){
  if(location.protocol.indexOf('http')!==0 || location.hostname.indexOf('claude')>=0) return;
  try {
@@ -979,6 +979,11 @@ function lvlModal(){
 }
 let S = newSave();
 try { const raw = localStorage.getItem(SKEY); if(raw) S = migrate(JSON.parse(raw)); } catch(e) {}
+/* ---- bonus de connexion : 50 pièces par jour différent ---- */
+function dayKey(){ const d = new Date(); return d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0'); }
+function dailyCheck(){ const k = dayKey(); if(S.lastDay === k) return; S.lastDay = k; S.gold += 50; save(); try { render(); } catch(e){} toast('Bonus de connexion du jour : +50 pièces !'); }
+setTimeout(dailyCheck, S._lvMsg ? 4000 : 1500);
+document.addEventListener('visibilitychange', () => { if(document.visibilityState==='visible') dailyCheck(); });
 if(S._lvMsg){ const m = S._lvMsg; delete S._lvMsg; setTimeout(() => { try { save(); toast(m); } catch(e){} }, 1500); }
 let DB = null, UID = null, saveTimer = null, saving = false, dirty = false;
 function save(){
@@ -999,7 +1004,7 @@ async function flush(){
   const id = await user.id(); if(!id) return;
   DB = db; UID = id;
   const snap = await db.doc('data/users/'+id+'/save').get();
-  if(snap.exists){ const d = snap.data(); if(d && d.t > (S.t||0)){ S = migrate(JSON.parse(d.json)); const b = arcBonusCheck(); if(b.tot) toast(`Bonus de fin d'arc (${b.names.join(', ')}) : +${b.tot} pièces`); try{localStorage.setItem(SKEY, JSON.stringify(S));}catch(e){} render(); } }
+  if(snap.exists){ const d = snap.data(); if(d && d.t > (S.t||0)){ S = migrate(JSON.parse(d.json)); const b = arcBonusCheck(); if(b.tot) toast(`Bonus de fin d'arc (${b.names.join(', ')}) : +${b.tot} pièces`); try{localStorage.setItem(SKEY, JSON.stringify(S));}catch(e){} render(); setTimeout(dailyCheck, 2500); } }
   else save();
  } catch(e) {}
 })();
@@ -1703,7 +1708,8 @@ function vRules(){
  <h3 style="font-size:22px;margin-top:10px">Gains</h3>
  <p>Victoire contre une équipe commune 100, rare 200, ultra rare 350, légendaire 500. Défaite : 20. Rejouer un combat déjà gagné donne la moitié.</p>
  <h3 style="font-size:22px;margin-top:10px">Niveau du compte</h3>
- <p>Chaque combat rapporte de l'<b>XP</b> : plus en cas de victoire, contre des adversaires de haut niveau, un boss, un événement ou un étage élevé de la Tour. Une défaite donne 15 XP. Les premiers niveaux montent très vite, puis chaque niveau demande un peu plus d'XP que le précédent (touche ton niveau en haut pour voir ta progression). Tous les <b>10 niveaux</b>, tu gagnes <b>500 pièces</b> ; tous les <b>50 niveaux</b>, <b>1 000 pièces</b>.</p></div>`;
+ <p>Chaque combat rapporte de l'<b>XP</b> : plus en cas de victoire, contre des adversaires de haut niveau, un boss, un événement ou un étage élevé de la Tour. Une défaite donne 15 XP. Les premiers niveaux montent très vite, puis chaque niveau demande un peu plus d'XP que le précédent (touche ton niveau en haut pour voir ta progression). Chaque <b>jour différent</b> où tu te connectes, tu gagnes <b>50 pièces</b>.</p>
+ <p>Tous les <b>10 niveaux</b>, tu gagnes <b>500 pièces</b> ; tous les <b>50 niveaux</b>, <b>1 000 pièces</b>.</p></div>`;
 }
 
 /* ================= COMBAT ================= */
