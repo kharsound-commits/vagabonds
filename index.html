@@ -754,17 +754,19 @@ body.homemode .wrap{padding:0 10px 30px}
 @keyframes dealin{from{transform:translateY(120px) scale(.3) rotate(calc((var(--i) - 1)*-25deg));opacity:0}to{transform:none;opacity:1}}
 .pc-in{position:absolute;inset:0;transform-style:preserve-3d;transition:transform .7s cubic-bezier(.3,1.4,.5,1)}
 .pc.flip .pc-in{transform:rotateY(180deg)}
-.pc-tease{position:absolute;inset:0;z-index:3;pointer-events:none;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:10%;border-radius:12px}
+.pc-tease{position:absolute;inset:0;z-index:3;pointer-events:none;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:6%;border-radius:12px}
+.pc-tease .tt{opacity:0;transform:scale(.4);transition:opacity .3s,transform .45s cubic-bezier(.2,1.6,.4,1);max-width:92%;text-align:center;font-size:min(3.6vw,19px);letter-spacing:.06em;line-height:1.15;color:#fff;background:linear-gradient(90deg,rgba(0,0,0,.2),rgba(0,0,0,.8),rgba(0,0,0,.2));border-top:2px solid #d8b450;border-bottom:2px solid #d8b450;padding:5px 12px;text-shadow:0 0 8px rgba(255,215,90,.8),0 2px 3px #000}
 .pc-tease .te,.pc-tease .tpv{opacity:0;transform:scale(.4);transition:opacity .3s,transform .45s cubic-bezier(.2,1.6,.4,1)}
 .pc-tease .te{display:flex;flex-direction:column;align-items:center;gap:4px;padding:8% 10%;border-radius:14px;background:radial-gradient(circle,rgba(0,0,0,.75),rgba(0,0,0,.35) 70%,transparent);filter:drop-shadow(0 0 12px var(--ec))}
-.pc-tease .te svg{width:min(14vw,90px);height:min(14vw,90px);filter:drop-shadow(0 0 10px var(--ec)) drop-shadow(0 0 22px var(--ec))}
+.pc-tease .te svg{width:min(11vw,70px);height:min(11vw,70px);filter:drop-shadow(0 0 10px var(--ec)) drop-shadow(0 0 22px var(--ec))}
 .pc-tease .te b{font-size:min(4.2vw,22px);letter-spacing:.08em;color:#fff;text-shadow:0 0 8px var(--ec),0 2px 3px #000}
 .pc-tease .tpv{font-size:min(7vw,40px);color:#fff4c8;text-shadow:0 0 10px rgba(255,200,80,.9),0 2px 4px #000;background:rgba(0,0,0,.55);padding:2px 14px;border-radius:12px;line-height:1.1}
 .pc-tease .tpv small{font-size:.45em;margin-right:6px;color:#ffd75a}
-.pc.t1 .pc-tease .te{opacity:1;transform:scale(1)}
+.pc.t1 .pc-tease .tt{opacity:1;transform:scale(1)}
 .pc.t2 .pc-tease .tpv{opacity:1;transform:scale(1)}
-.pc.t3 .pc-tease,.pc.flip .pc-tease{opacity:0;transition:opacity .25s}
-.pc.t3 .pc-tease .te,.pc.t3 .pc-tease .tpv{transform:scale(1.25)}
+.pc.t3 .pc-tease .te{opacity:1;transform:scale(1)}
+.pc.t4 .pc-tease,.pc.flip .pc-tease{opacity:0;transition:opacity .25s}
+.pc.t4 .pc-tease .te,.pc.t4 .pc-tease .tpv,.pc.t4 .pc-tease .tt{transform:scale(1.25)}
 .pc-back,.pc-front{position:absolute;inset:0;backface-visibility:hidden;-webkit-backface-visibility:hidden}
 .pc-front{transform:rotateY(180deg)}
 .pc-front .card{height:100%;width:100%;aspect-ratio:auto}
@@ -963,7 +965,7 @@ const esc = s => String(s).replace(/[&<>"]/g, c => ({'&':'&amp;','<':'&lt;','>':
 const pick = a => a[Math.floor(Math.random()*a.length)];
 
 /* ---------- mise à jour automatique (app installée sur l'écran d'accueil) ---------- */
-const APP_VER = '1.21.3';
+const APP_VER = '1.21.4';
 async function checkUpdate(){
  if(location.protocol.indexOf('http')!==0 || location.hostname.indexOf('claude')>=0) return;
  try {
@@ -1461,17 +1463,18 @@ function packTap(i){ if(PK && PK.dealt && !PK.busy) reveal(i, null); }
 function teaseHTML(c){
  const e = EL[c.el];
  const ico = e ? `<svg viewBox="0 0 24 24" fill="${e.fill}" stroke="${e.stroke}" stroke-width="${e.sw}" stroke-linecap="round" stroke-linejoin="round">${e.svg}</svg>` : '';
- return `<div class="pc-tease"><div class="te" style="--ec:${e?e.c:'#ffd75a'}">${ico}<b class="fg">${c.kind==='stade' ? 'STADE' : (e?e.n:'').toUpperCase()}</b></div>${c.kind==='stade'?'':`<div class="tpv fg"><small>PV</small>${c.pv}</div>`}</div>`;
+ return `<div class="pc-tease"><div class="tt fg">${esc(c.kind==='stade' ? 'Stade' : (c.team||'')).toUpperCase()}</div>${c.kind==='stade'?'':`<div class="tpv fg"><small>PV</small>${c.pv}</div>`}<div class="te" style="--ec:${e?e.c:'#ffd75a'}">${ico}<b class="fg">${c.kind==='stade' ? 'STADE' : (e?e.n:'').toUpperCase()}</b></div></div>`;
 }
-// révélation progressive : d'abord le type, puis les PV, puis la carte
+// révélation progressive : d'abord l'équipe, puis les PV, puis le type, puis la carte
 function reveal(i, cb){
  const el = document.querySelector(`.pc[data-i="${i}"]`);
  if(!PK || !el || el.classList.contains('flip') || PK.busy) return;
  PK.busy = true;
- const r = CARDS[PK.pull[PK.order[i]].k].r, d = r==='commune' ? 900 : r==='rare' ? 1100 : 1400;
+ const r = CARDS[PK.pull[PK.order[i]].k].r, d = r==='commune' ? 800 : r==='rare' ? 1000 : 1300;
  el.classList.add('t1'); sfx('swoosh');
  pkLater(() => { el.classList.add('t2'); sfx('coin'); }, d);
- pkLater(() => { el.classList.add('t3'); PK.busy = false; revealCore(i, cb); }, d*2.1);
+ pkLater(() => { el.classList.add('t3'); sfx('swoosh'); }, d*2);
+ pkLater(() => { el.classList.add('t4'); PK.busy = false; revealCore(i, cb); }, d*3.1);
 }
 function revealCore(i, cb){
  const el = document.querySelector(`.pc[data-i="${i}"]`);
