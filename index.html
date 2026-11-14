@@ -687,6 +687,35 @@ body.homemode .wrap{padding:0 10px 30px}
 .lg-banner{position:absolute;left:50%;top:14%;transform:translate(-50%,0) scale(3);opacity:0;z-index:30;pointer-events:none;font-size:clamp(34px,7vw,80px);letter-spacing:.12em;color:#ffd75a;white-space:nowrap;
  text-shadow:0 0 20px rgba(255,190,60,.9),0 4px 0 #5a3200,0 8px 20px rgba(0,0,0,.6)}
 .lg-banner.myth{background:linear-gradient(90deg,#ff7fc0,#ffe27a,#7dffcf,#7fd0ff,#d0a0ff,#ff7fc0);-webkit-background-clip:text;background-clip:text;color:transparent;filter:drop-shadow(0 0 12px rgba(220,180,255,.9)) drop-shadow(0 3px 4px #000)}
+.cosmos{position:absolute;inset:0;z-index:15;pointer-events:none;opacity:0;transition:opacity .9s;background:radial-gradient(ellipse at 50% 50%,#1a0b33 0%,#07030f 60%,#000 100%)}
+.cosmos.s1{opacity:1}.cosmos.out{opacity:0;transition:opacity .8s}
+.cstars i{position:absolute;width:var(--s);height:var(--s);border-radius:50%;background:#fff;box-shadow:0 0 6px #fff;animation:twinkle 1.6s ease-in-out infinite;animation-delay:var(--d)}
+@keyframes twinkle{0%,100%{opacity:.2}50%{opacity:1}}
+.ceye{position:absolute;left:50%;top:50%;width:min(90vw,820px);transform:translate(-50%,-50%) scale(.6);opacity:0;transition:opacity .8s,transform 1.4s cubic-bezier(.2,1,.3,1)}
+.ceye svg{width:100%;overflow:visible;filter:drop-shadow(0 0 30px rgba(208,160,255,.9)) drop-shadow(0 0 70px rgba(255,226,122,.5))}
+.ceye .lid{fill:rgba(20,8,40,.85);stroke:#ffe27a;stroke-width:2.5;transform-origin:100px 50px;transform:scaleY(.02);transition:transform 1s cubic-bezier(.3,1.4,.5,1)}
+.ceye .iris{transform-origin:100px 50px;transform:scale(0);transition:transform .9s .3s cubic-bezier(.3,1.6,.5,1)}
+.cosmos.s2 .ceye{opacity:.9;transform:translate(-50%,-50%) scale(1)}
+.cosmos.s2 .ceye .lid{transform:scaleY(1)}.cosmos.s2 .ceye .iris{transform:scale(1)}
+.cosmos.s4 .ceye{opacity:0;transform:translate(-50%,-50%) scale(1.6);transition:opacity .4s,transform .5s}
+.corbs{position:absolute;left:50%;top:50%;width:0;height:0}
+.corbs i{position:absolute;left:-18px;top:-18px;width:36px;height:36px;border-radius:50%;background:radial-gradient(circle,#fff 0,var(--c) 45%,transparent 72%);box-shadow:0 0 24px var(--c),0 0 50px var(--c);opacity:0;transform:rotate(var(--a)) translateX(min(42vw,380px))}
+.cosmos.s3 .corbs i{opacity:1;animation:orbit 1.6s cubic-bezier(.6,0,.4,1) forwards}
+@keyframes orbit{0%{transform:rotate(var(--a)) translateX(min(42vw,380px)) scale(.6)}100%{transform:rotate(calc(var(--a) + 540deg)) translateX(0) scale(1.8)}}
+.cosmos.s4 .corbs i{opacity:0;transition:opacity .2s}
+.crings{position:absolute;left:50%;top:50%}
+.crings i{position:absolute;left:0;top:0;width:40px;height:40px;margin:-20px 0 0 -20px;border-radius:50%;border:6px solid transparent;border-image:none;background:conic-gradient(#ff7fc0,#ffe27a,#7dffcf,#7fd0ff,#d0a0ff,#ff7fc0) border-box;-webkit-mask:radial-gradient(circle,transparent 62%,#000 64%,#000 70%,transparent 72%);mask:radial-gradient(circle,transparent 62%,#000 64%,#000 70%,transparent 72%);opacity:0}
+.cosmos.s5 .crings i{animation:cring 1.6s ease-out forwards}
+.cosmos.s5 .crings i:nth-child(2){animation-delay:.25s}.cosmos.s5 .crings i:nth-child(3){animation-delay:.5s}
+@keyframes cring{0%{opacity:1;transform:scale(1)}100%{opacity:0;transform:scale(45)}}
+.fx.mythic .pillar{display:none}
+.fx.mythic .deal{position:relative;z-index:21}
+.fx.mythic .pc:not(.spot){opacity:0}
+.fx.mythic .hint,.fx.mythic .skip{opacity:0}
+.pc.mspot{z-index:22}
+.pc.mspot{border-radius:12px;box-shadow:0 0 26px rgba(208,160,255,.85)}
+.pc.mspot.flip{animation:mythglow 2.4s linear infinite}
+@keyframes mythglow{0%{box-shadow:0 0 26px #ff7fc0,0 0 70px #ffe27a}33%{box-shadow:0 0 26px #7dffcf,0 0 70px #7fd0ff}66%{box-shadow:0 0 26px #d0a0ff,0 0 70px #ff7fc0}100%{box-shadow:0 0 26px #ff7fc0,0 0 70px #ffe27a}}
 .lg-banner.go{animation:slam 2.2s cubic-bezier(.2,1.4,.4,1) forwards}
 @keyframes slam{0%{opacity:0;transform:translate(-50%,0) scale(3)}18%{opacity:1;transform:translate(-50%,0) scale(1)}80%{opacity:1;transform:translate(-50%,0) scale(1)}100%{opacity:0;transform:translate(-50%,-20px) scale(1)}}
 .rain{position:absolute;top:-20px;width:var(--s);height:calc(var(--s)*1.6);background:linear-gradient(#fff3b0,#f2b51e);border-radius:2px;box-shadow:0 0 8px rgba(255,200,80,.9);pointer-events:none;z-index:25;animation:rainfall var(--t) linear var(--d) forwards;opacity:0}
@@ -934,7 +963,7 @@ const esc = s => String(s).replace(/[&<>"]/g, c => ({'&':'&amp;','<':'&lt;','>':
 const pick = a => a[Math.floor(Math.random()*a.length)];
 
 /* ---------- mise à jour automatique (app installée sur l'écran d'accueil) ---------- */
-const APP_VER = '1.20.2';
+const APP_VER = '1.21.0';
 async function checkUpdate(){
  if(location.protocol.indexOf('http')!==0 || location.hostname.indexOf('claude')>=0) return;
  try {
@@ -1233,6 +1262,8 @@ const SFX = {
   if(r==='ultra'){ B.braam(at, 41, 1.6, .16, false); B.taiko(at, 1); B.bells(at+.1, [77,81,84,89], .07, .12); }
   if(r==='legend'){ B.boom(at, 1.4); B.braam(at, 38, 2.6, .24, false); B.choir(at+.05, [62,66,69,74], 3, .09); B.bells(at+.2, [86,90,93,98,102], .08, .14); B.taiko(at, 1); B.taiko(at+.25, .7); }
  },
+ mythCharge(){ B.riser(0, 3.2); voice({f:NOTE(26), type:'sawtooth', dur:3.4, vol:.1, att:2, ft:'lowpass', ff:120, fto:1400, dist:1, rev:.5}); B.choir(.6, [50,57,62,69], 3, .07); [0,.8,1.4,1.9,2.3,2.6,2.85,3.05].forEach((d,i) => B.taiko(d, .35+i*.08)); B.bells(1.2, [86,90,93,98,102,105], .12, .08); },
+ mythBlast(at=0){ B.boom(at, 1.6); B.braam(at, 34, 3.4, .26, false); B.choir(at+.05, [62,66,69,74,78], 3.6, .1); B.bells(at+.15, [86,90,93,98,102,105,110], .07, .15); B.taiko(at, 1); B.taiko(at+.3, .8); B.taiko(at+.6, .6); },
  legendCharge(){ B.riser(0, 2); B.choir(.1, [50,57,62], 2.1, .07); [0,.5,.9,1.2,1.45,1.65,1.8,1.92].forEach((d,i) => B.taiko(d, .4+i*.07)); },
  coin(at=0){ voice({at, f:NOTE(98), type:'square', dur:.08, vol:.05}); voice({at:at+.05, f:NOTE(103), type:'square', dur:.16, vol:.05, rev:.3}); },
  victory(){
@@ -1456,6 +1487,7 @@ function revealCore(i, cb){
   pkLater(() => { el.classList.remove('charge'); el.classList.add('flip'); sfx('flip','ultra'); fxFlash('rgba(170,110,255,.7)', 650); fxBoom(); fxSparks(el, ['#cfa8ff','#a774f2','#fff'], 26, 180); }, 1000);
   return finish(1800);
  }
+ if(r==='mythic') return revealMythic(el, finish);
  // légendaire : la carte vient au centre, un pilier de lumière tombe, puis l'éclat
  const box = el.getBoundingClientRect();
  el.style.setProperty('--dx', (innerWidth/2 - (box.left+box.width/2))+'px');
@@ -1468,11 +1500,36 @@ function revealCore(i, cb){
  pkLater(() => { el.classList.remove('spot'); fx.classList.remove('spotlight'); }, r==='mythic'?5200:4300);
  finish(r==='mythic'?5800:4900);
 }
+// ultra légendaire : nuit cosmique, l'œil s'ouvre, les six éléments convergent, onde prismatique
+function revealMythic(el, finish){
+ const fx = fxEl(), box = el.getBoundingClientRect();
+ el.style.setProperty('--dx', (innerWidth/2 - (box.left+box.width/2))+'px');
+ el.style.setProperty('--dy', (innerHeight/2 - (box.top+box.height/2))+'px');
+ const ec = ['#FF6A2B','#3D9BFF','#4CC45E','#A774F2','#F2C230','#8CC8E8'];
+ const cos = document.createElement('div'); cos.className = 'cosmos';
+ cos.innerHTML = `<div class="cstars">${Array.from({length:70},()=>`<i style="left:${Math.random()*100}%;top:${Math.random()*100}%;--d:${(Math.random()*2).toFixed(2)}s;--s:${(1+Math.random()*2.5).toFixed(1)}px"></i>`).join('')}</div>
+  <div class="ceye"><svg viewBox="0 0 200 100"><defs><radialGradient id="cIris"><stop offset="0" stop-color="#fff"/><stop offset=".35" stop-color="#ffe27a"/><stop offset=".7" stop-color="#d0a0ff"/><stop offset="1" stop-color="#3a1a6a"/></radialGradient></defs><path class="lid" d="M5 50 Q100 -10 195 50 Q100 110 5 50z"/><circle class="iris" cx="100" cy="50" r="26" fill="url(#cIris)"/><circle cx="100" cy="50" r="9" fill="#0b0618"/></svg></div>
+  <div class="corbs">${ec.map((c,k)=>`<i style="--c:${c};--a:${k*60}deg"></i>`).join('')}</div>
+  <div class="crings"><i></i><i></i><i></i></div>`;
+ fx.appendChild(cos);
+ fx.classList.add('spotlight','mythic'); el.classList.add('spot','mspot'); sfx('mythCharge');
+ pkLater(() => cos.classList.add('s1'), 50);        // la nuit tombe, les étoiles
+ pkLater(() => cos.classList.add('s2'), 900);       // l'œil s'ouvre
+ pkLater(() => { cos.classList.add('s3'); el.classList.add('charge'); }, 1700);  // les six éléments tournent
+ pkLater(() => { cos.classList.add('s4'); fxFlash('rgba(255,255,255,1)', 1100); }, 3300);  // ils convergent : éclat blanc
+ pkLater(() => { cos.classList.add('s5'); el.classList.remove('charge'); el.classList.add('flip'); sfx('mythBlast'); fxBoom();
+  fxSparks(el, ['#ff7fc0','#ffe27a','#7dffcf','#7fd0ff','#d0a0ff','#fff'], 110, 380); fxRain(140);
+  const bn = document.getElementById('lgBanner'); bn.textContent = 'ULTRA LÉGENDAIRE !'; bn.classList.add('myth'); bn.classList.remove('go'); void bn.offsetWidth; bn.classList.add('go'); }, 3500);
+ pkLater(() => { fxFlash('rgba(200,160,255,.8)', 900); fxBoom(); }, 4300);
+ pkLater(() => { cos.classList.add('out'); el.classList.remove('spot','mspot'); fx.classList.remove('spotlight','mythic'); }, 7000);
+ pkLater(() => cos.remove(), 7800);
+ finish(7600);
+}
 function packSkip(){
  if(!PK) return;
  if(PK.flipped>=PK.pull.length || fxEl().classList.contains('end')) return packDone();
  PK.timers.forEach(clearTimeout); PK.timers = []; PK.opened = true; PK.dealt = true; PK.busy = false;
- const fx = fxEl(); fx.classList.remove('shake','hype','spotlight'); fx.classList.add('torn','cards');
+ const fx = fxEl(); fx.classList.remove('shake','hype','spotlight','mythic'); fx.querySelectorAll('.cosmos').forEach(c => c.remove()); fx.querySelectorAll('.pc').forEach(c => c.classList.remove('spot','mspot','charge')); fx.classList.add('torn','cards');
  fx.querySelector('.pack').classList.add(PK.best);
  fx.querySelectorAll('.pc').forEach(c => { c.classList.remove('spot','charge'); c.classList.add('dealt','flip'); });
  PK.flipped = PK.pull.length; document.getElementById('fxHint').textContent = ''; fx.classList.add('end');
