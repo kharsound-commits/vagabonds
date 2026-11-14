@@ -725,6 +725,17 @@ body.homemode .wrap{padding:0 10px 30px}
 @keyframes dealin{from{transform:translateY(120px) scale(.3) rotate(calc((var(--i) - 1)*-25deg));opacity:0}to{transform:none;opacity:1}}
 .pc-in{position:absolute;inset:0;transform-style:preserve-3d;transition:transform .7s cubic-bezier(.3,1.4,.5,1)}
 .pc.flip .pc-in{transform:rotateY(180deg)}
+.pc-tease{position:absolute;inset:0;z-index:3;pointer-events:none;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:10%;border-radius:12px}
+.pc-tease .te,.pc-tease .tpv{opacity:0;transform:scale(.4);transition:opacity .3s,transform .45s cubic-bezier(.2,1.6,.4,1)}
+.pc-tease .te{display:flex;flex-direction:column;align-items:center;gap:4px;padding:8% 10%;border-radius:14px;background:radial-gradient(circle,rgba(0,0,0,.75),rgba(0,0,0,.35) 70%,transparent);filter:drop-shadow(0 0 12px var(--ec))}
+.pc-tease .te svg{width:min(14vw,90px);height:min(14vw,90px);filter:drop-shadow(0 0 10px var(--ec)) drop-shadow(0 0 22px var(--ec))}
+.pc-tease .te b{font-size:min(4.2vw,22px);letter-spacing:.08em;color:#fff;text-shadow:0 0 8px var(--ec),0 2px 3px #000}
+.pc-tease .tpv{font-size:min(7vw,40px);color:#fff4c8;text-shadow:0 0 10px rgba(255,200,80,.9),0 2px 4px #000;background:rgba(0,0,0,.55);padding:2px 14px;border-radius:12px;line-height:1.1}
+.pc-tease .tpv small{font-size:.45em;margin-right:6px;color:#ffd75a}
+.pc.t1 .pc-tease .te{opacity:1;transform:scale(1)}
+.pc.t2 .pc-tease .tpv{opacity:1;transform:scale(1)}
+.pc.t3 .pc-tease,.pc.flip .pc-tease{opacity:0;transition:opacity .25s}
+.pc.t3 .pc-tease .te,.pc.t3 .pc-tease .tpv{transform:scale(1.25)}
 .pc-back,.pc-front{position:absolute;inset:0;backface-visibility:hidden;-webkit-backface-visibility:hidden}
 .pc-front{transform:rotateY(180deg)}
 .pc-front .card{height:100%;width:100%;aspect-ratio:auto}
@@ -923,7 +934,7 @@ const esc = s => String(s).replace(/[&<>"]/g, c => ({'&':'&amp;','<':'&lt;','>':
 const pick = a => a[Math.floor(Math.random()*a.length)];
 
 /* ---------- mise à jour automatique (app installée sur l'écran d'accueil) ---------- */
-const APP_VER = '1.19.2';
+const APP_VER = '1.20.0';
 async function checkUpdate(){
  if(location.protocol.indexOf('http')!==0 || location.hostname.indexOf('claude')>=0) return;
  try {
@@ -1374,7 +1385,7 @@ function packAnim(pull){
   <div class="hint" id="fxHint">Touche le paquet pour l'ouvrir&nbsp;!</div>
   <div class="pack" data-act="popen"><img class="pk-top" src="img/pack_top.webp" alt=""><div class="pk-b"><img src="img/pack_body.webp" alt="Paquet Vagabonds"></div>${BOLTS}</div>
   <div class="deal">${order.map((pi,i) => { const p = pull[pi], c = CARDS[p.k];
-   return `<div class="pc r-${c.r}" style="--i:${i}" data-act="pflip" data-i="${i}"><div class="rays"></div><div class="ring"></div>${c.r==='ultra'||c.r==='legend'||c.r==='mythic'?BOLTS:''}<div class="pc-in"><div class="pc-back">${cardBackHTML()}</div><div class="pc-front">${cardHTML(p.k)}</div></div>${p.isNew?'<span class="tag new nw">Nouveau !</span>':''}<div class="lbl">${RNAME[c.r]}</div></div>`; }).join('')}</div>
+   return `<div class="pc r-${c.r}" style="--i:${i}" data-act="pflip" data-i="${i}"><div class="rays"></div><div class="ring"></div>${c.r==='ultra'||c.r==='legend'||c.r==='mythic'?BOLTS:''}<div class="pc-in"><div class="pc-back">${cardBackHTML()}</div><div class="pc-front">${cardHTML(p.k)}</div></div>${teaseHTML(c)}${p.isNew?'<span class="tag new nw">Nouveau !</span>':''}<div class="lbl">${RNAME[c.r]}</div></div>`; }).join('')}</div>
   <div class="lg-banner fg" id="lgBanner">LÉGENDAIRE !</div>
   <button class="btn gold done" data-act="pdone">Voir mes cartes</button></div>`;
 }
@@ -1416,7 +1427,22 @@ function autoNext(){
  reveal(i, () => pkLater(autoNext, 650));
 }
 function packTap(i){ if(PK && PK.dealt && !PK.busy) reveal(i, null); }
+function teaseHTML(c){
+ const e = EL[c.el];
+ const ico = e ? `<svg viewBox="0 0 24 24" fill="${e.fill}" stroke="${e.stroke}" stroke-width="${e.sw}" stroke-linecap="round" stroke-linejoin="round">${e.svg}</svg>` : '';
+ return `<div class="pc-tease"><div class="te" style="--ec:${e?e.c:'#ffd75a'}">${ico}<b class="fg">${c.kind==='stade' ? 'STADE' : (e?e.n:'').toUpperCase()}</b></div>${c.kind==='stade'?'':`<div class="tpv fg"><small>PV</small>${c.pv}</div>`}</div>`;
+}
+// révélation progressive : d'abord le type, puis les PV, puis la carte
 function reveal(i, cb){
+ const el = document.querySelector(`.pc[data-i="${i}"]`);
+ if(!PK || !el || el.classList.contains('flip') || PK.busy) return;
+ PK.busy = true;
+ const r = CARDS[PK.pull[PK.order[i]].k].r, d = r==='commune' ? 380 : r==='rare' ? 520 : 720;
+ el.classList.add('t1'); sfx('swoosh');
+ pkLater(() => { el.classList.add('t2'); sfx('coin'); }, d);
+ pkLater(() => { el.classList.add('t3'); PK.busy = false; revealCore(i, cb); }, d*2.1);
+}
+function revealCore(i, cb){
  const el = document.querySelector(`.pc[data-i="${i}"]`);
  if(!PK || !el || el.classList.contains('flip') || PK.busy) return;
  PK.busy = true;
