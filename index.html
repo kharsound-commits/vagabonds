@@ -902,7 +902,7 @@ const esc = s => String(s).replace(/[&<>"]/g, c => ({'&':'&amp;','<':'&lt;','>':
 const pick = a => a[Math.floor(Math.random()*a.length)];
 
 /* ---------- mise à jour automatique (app installée sur l'écran d'accueil) ---------- */
-const APP_VER = '1.9.0';
+const APP_VER = '1.9.1';
 async function checkUpdate(){
  if(location.protocol.indexOf('http')!==0 || location.hostname.indexOf('claude')>=0) return;
  try {
@@ -1010,7 +1010,7 @@ function detailModal(k){
   <div class="kv">${EL[c.el].n} · ${RNAME[c.r]} · ${esc(c.team)} · Faiblesse : ${EL[WEAK[c.el]].n}</div>
   <div class="kv"><b>PV</b> ${c.pv + (LVPV[lvl]||0)}${lvl>1?` <span class="muted">(${c.pv} +${LVPV[lvl]})</span>`:''}</div>
   <div class="kv"><b>Attaque</b> ${esc(c.an)} : ${c.ad + (LVAT[lvl]||0)}${lvl>1?` <span class="muted">(${c.ad} +${LVAT[lvl]})</span>`:''}</div>
-  <div class="kv"><b>Spéciale</b> ${esc(c.sn)} : ${esc(spText(c,lvl))} <span class="muted">(recharge : ${esc(c.rct)}${lvl>=5&&c.rc<99?', −1 tour':''})</span></div>
+  <div class="kv"><b>Spéciale</b> ${esc(c.sn)} : ${esc(spText(c,lvl))} <span class="muted">(recharge : ${esc(c.rct)}${lvl>=5&&c.rc<99&&c.sp.t!=='stunall'?', −1 tour':''})</span></div>
   <div class="kv"><b>Camp</b> ${DATA.camp[c.team]==='mechant'?'Méchant':'Gentil'}</div>
   ${o?`<div class="kv"><b>Niveau</b> ${o.lvl}/5 · <b>Exemplaires</b> ${o.n}</div>`:''}
   <p class="muted" style="font-size:13px">Chaque doublon utilisé fait monter la carte d'un niveau : PV, attaque et spéciale augmentent. Au niveau 5, la recharge de la spéciale baisse d'1 tour.</p>`;
@@ -1780,7 +1780,7 @@ function doAction(f, mode, tgt){
  }
  const sp = f.c.sp, v = sp.v ? spVal(f, sp.v) : 0, o = {pierce:sp.pierce, sure:sp.sure, chance:sp.chance, noweak:sp.noweak};
  L(`${f.c.nom} lance ${f.c.sn} !`, f.side);
- f.cd = f.c.rc >= 99 ? 99 : Math.max(1, f.c.rc - (f.lvl>=8?2:f.lvl>=5?1:0));
+ f.cd = f.c.rc >= 99 ? 99 : f.c.sp.t==='stunall' ? Math.max(3, f.c.rc) : Math.max(1, f.c.rc - (f.lvl>=8?2:f.lvl>=5?1:0));
  switch(sp.t){
   case 'dmg': { const d = hit(f, tgt, v, o);
    if(sp.stun && !tgt.dead && d>0){ tgt.stun = 1; L(`${tgt.c.nom} passe son prochain tour`, f.side); }
