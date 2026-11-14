@@ -963,7 +963,7 @@ const esc = s => String(s).replace(/[&<>"]/g, c => ({'&':'&amp;','<':'&lt;','>':
 const pick = a => a[Math.floor(Math.random()*a.length)];
 
 /* ---------- mise à jour automatique (app installée sur l'écran d'accueil) ---------- */
-const APP_VER = '1.21.1';
+const APP_VER = '1.21.2';
 async function checkUpdate(){
  if(location.protocol.indexOf('http')!==0 || location.hostname.indexOf('claude')>=0) return;
  try {
@@ -1447,7 +1447,7 @@ function packOpen(){
  pkLater(() => { pack.classList.add(b); if(b!=='commune') fxFlash(b==='mythic'?'rgba(215,170,255,.75)':b==='legend'?'rgba(255,210,90,.6)':b==='ultra'?'rgba(170,110,255,.55)':'rgba(90,150,255,.45)', 600); }, hype?500:300);
  const tear = hype ? 1300 : 650;
  pkLater(() => { fx.classList.remove('shake','hype'); fx.classList.add('torn'); fxFlash('rgba(255,255,255,.9)', 700); sfx('tear'); sfx('shimmer', .1); if(b==='legend'||b==='mythic') fxBoom(); }, tear);
- pkLater(() => { fx.classList.add('cards'); document.getElementById('fxHint').textContent = 'Touche une carte pour la retourner'; }, tear+750);
+ pkLater(() => { fx.classList.add('cards'); }, tear+750);
  pkLater(() => { PK.dealt = true; fx.querySelectorAll('.pc').forEach(c => c.classList.add('dealt')); autoNext(); }, tear+1700);
 }
 function autoNext(){
