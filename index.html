@@ -922,7 +922,7 @@ const esc = s => String(s).replace(/[&<>"]/g, c => ({'&':'&amp;','<':'&lt;','>':
 const pick = a => a[Math.floor(Math.random()*a.length)];
 
 /* ---------- mise à jour automatique (app installée sur l'écran d'accueil) ---------- */
-const APP_VER = '1.17.0';
+const APP_VER = '1.17.1';
 async function checkUpdate(){
  if(location.protocol.indexOf('http')!==0 || location.hostname.indexOf('claude')>=0) return;
  try {
@@ -1679,7 +1679,7 @@ function towerModal(){
 }
 function evModal(i){
  const E = DATA.events[i], done = evState(E.id).done, r = teamRarity(E.team);
- const rew = !E.cards.length ? `${E.gold.toLocaleString('fr-FR')} pièces${E.xpMul?' + XP ×'+E.xpMul:''}` : `${E.gold} pièces + ${E.cards.length>1?'les '+E.cards.length+' cartes de l\'équipe':CARDS[E.cards[0]].nom+(E.cards[0].startsWith('L_')?' légendaire':'')}`;
+ const rew = !E.cards.length ? `${E.gold.toLocaleString('fr-FR')} pièces${E.xpMul?' + XP ×'+E.xpMul+' (une seule fois)':''}` : `${E.gold} pièces + ${E.cards.length>1?'les '+E.cards.length+' cartes de l\'équipe':CARDS[E.cards[0]].nom+(E.cards[0].startsWith('L_')?' légendaire':'')}`;
  modal(`<div class="evtag ${EV_COL[i]}">${esc(E.diff.toUpperCase())}</div><h2 style="font-size:32px;margin-top:6px">${esc(E.nom)}</h2>
   <p>${esc(E.desc)}</p>
   ${E.until ? `<div class="kv"><b>Fin</b> ${evLive(E) ? esc(E.fin)+' · encore '+evLeft(E) : 'terminé'}</div>` : ''}
@@ -1691,7 +1691,7 @@ function evModal(i){
 function vEvent(){
  const n = evPerm().length, nd = evDone();
  const flash = DATA.events.map((E,i) => [E,i]).filter(([E]) => E.until && evLive(E)).map(([E,i]) => { const done = evState(E.id).done;
-  return `<button class="flashbtn" data-act="evopen" data-i="${i}"><span class="towic">💰</span><span><b class="fg">ÉVÉNEMENT EXCEPTIONNEL</b><span class="fl1">${esc(E.nom)} · ${done?'réussi ✓'+(E.xpMul?' · rejoue pour XP ×'+E.xpMul:''):'+'+E.gold.toLocaleString('fr-FR')+' pièces'+(E.xpMul?' · XP ×'+E.xpMul:'')}</span><small>Fin ${esc(E.fin)} · encore ${evLeft(E)}</small></span></button>`; }).join('');
+  return `<button class="flashbtn" data-act="evopen" data-i="${i}"><span class="towic">💰</span><span><b class="fg">ÉVÉNEMENT EXCEPTIONNEL</b><span class="fl1">${esc(E.nom)} · ${done?'réussi ✓':'+'+E.gold.toLocaleString('fr-FR')+' pièces'+(E.xpMul?' · XP ×'+E.xpMul:'')}</span><small>Fin ${esc(E.fin)} · encore ${evLeft(E)}</small></span></button>`; }).join('');
  const mk = (E,i) => { const done = evState(E.id).done;
   return `<button class="mk ev ${EV_COL[i]} ${done?'done':''}" ${isPortrait()?'':`style="left:${EV_POS[i][0]}%;top:${EV_POS[i][1]}%"`} data-act="evopen" data-i="${i}" aria-label="${esc(E.nom)}"><span class="md fg">${done?'✓':i+1}</span><span class="lb fg"><b>${esc(E.diff.toUpperCase())}</b><span>${esc(E.nom.toUpperCase())}</span><small>${done?'Réussi':`+${E.gold} pièces · ${E.cards.length>1?E.cards.length+' cartes':CARDS[E.cards[0]].nom+(E.cards[0].startsWith('L_')?' légendaire':'')}`}</small></span></button>`; };
  const tb = towerState().best;
@@ -1954,6 +1954,7 @@ function finish(win, fled){
  C.over = win ? 'win' : 'lose'; C.busy = false;
  if(Date.now() < (C.animUntil||0) && !C._finWait){ C._finWait = true; C.over = null; C.busy = true; setTimeout(() => { C.busy = false; finish(win, fled); }, animWait(200)); return; }
  const ctx = C.ctx; let gain = fled ? 0 : 20, msg = '';
+ const evFirst = ctx.type==='event' && !evState(DATA.events[ctx.i].id).done;
  if(win){
   gain = GAIN[C.rar];
   if(ctx.type==='story'){
@@ -1990,7 +1991,7 @@ function finish(win, fled){
  S.gold += gain; C.gain = gain;
  const elv = Math.max(1, ...C.e.map(f => f.lvl||1));
  const xp = fled ? 0 : win ? winXP(elv, ctx.type==='story' && FIGHTS[ctx.i].f.boss) + (ctx.type==='event' ? 200 : 0) + (ctx.type==='tower' ? 15*ctx.n : 0) : 15;
- const xpMul = win && ctx.type==='event' && evLive(DATA.events[ctx.i]) ? (DATA.events[ctx.i].xpMul||1) : 1;
+ const xpMul = win && evFirst && evLive(DATA.events[ctx.i]) ? (DATA.events[ctx.i].xpMul||1) : 1;
  const lv = addXP(S, xp*xpMul); C.xp = xp*xpMul; C.lvUp = lv.ups.length ? {lvl:S.alv, got:lv.got} : null;
  C.reward = msg; save(); render();
 }
