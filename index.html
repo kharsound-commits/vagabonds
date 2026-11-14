@@ -987,7 +987,7 @@ const esc = s => String(s).replace(/[&<>"]/g, c => ({'&':'&amp;','<':'&lt;','>':
 const pick = a => a[Math.floor(Math.random()*a.length)];
 
 /* ---------- mise à jour automatique (app installée sur l'écran d'accueil) ---------- */
-const APP_VER = '1.23.1';
+const APP_VER = '1.23.2';
 async function checkUpdate(){
  if(location.protocol.indexOf('http')!==0 || location.hostname.indexOf('claude')>=0) return;
  try {
@@ -1137,6 +1137,7 @@ function detailModal(k){
   <div class="kv"><b>Spéciale</b> ${esc(c.sn)} : ${esc(spText(c,lvl))} <span class="muted">(recharge : ${esc(c.rct)}${lvl>=5&&c.rc<99&&c.sp.t!=='stunall'?', −1 tour':''})</span></div>
   <div class="kv"><b>Camp</b> ${DATA.camp[c.team]==='mechant'?'Méchant':'Gentil'}</div>
   ${o?`<div class="kv"><b>Niveau</b> ${o.lvl}/5 · <b>Exemplaires</b> ${o.n}</div>`:''}
+  ${o && o.n>1 ? `<div class="row" style="margin:8px 0;gap:8px;flex-wrap:wrap">${o.lvl<5?`<button class="btn gold sm" data-act="cup" data-k="${k}">Monter au niveau ${o.lvl+1} (1 doublon)</button>`:''}<button class="btn sec sm" data-act="csell" data-k="${k}">Vendre 1 doublon (+${(SELL[c.r]||10).toLocaleString('fr-FR')} pièces)</button></div>` : ''}
   <p class="muted" style="font-size:13px">Chaque doublon utilisé fait monter la carte d'un niveau : PV, attaque et spéciale augmentent. Au niveau 5, la recharge de la spéciale baisse d'1 tour.</p>`;
  }
  VW.k = k; if(!VW.list.includes(k)) VW.list = [k];
@@ -2405,6 +2406,8 @@ document.addEventListener('click', e => {
   case 'pdone': packDone(); break;
   case 'up': { const p = lastPull[+a.dataset.i]; const o = own(p.k); o.lvl = Math.min(5, o.lvl+1); o.n--; p.done = true; p.res = `Niveau ${o.lvl}`; save(); render(); break; }
   case 'lvlopen': lvlModal(); break;
+ case 'cup': { const k = a.dataset.k, o = own(k); if(o && o.n>1 && o.lvl<5){ o.lvl++; o.n--; save(); toast(`${CARDS[k].nom} passe au niveau ${o.lvl} !`); render(); detailModal(k); } break; }
+ case 'csell': { const k = a.dataset.k, o = own(k); if(o && o.n>1){ const v = SELL[CARDS[k].r]||10; o.n--; S.gold += v; save(); toast(`Doublon vendu : +${v} pièces`); render(); detailModal(k); } break; }
  case 'sell': { const p = lastPull[+a.dataset.i]; const o = own(p.k), v = SELL[CARDS[p.k].r]||10; o.n--; S.gold += v; p.done = true; p.res = 'Vendue +'+v; save(); render(); break; }
   case 'add': closeModal(); teamAdd(a.dataset.k); break;
   case 'rm': closeModal(); S.team = S.team.filter(k => k!==a.dataset.k); save(); render(); break;
