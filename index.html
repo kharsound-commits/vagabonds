@@ -720,13 +720,14 @@ body.homemode .wrap{padding:0 10px 30px}
 .wbg{position:absolute;inset:0;background:url(img/walk_tunnel.jpg) 50% 57%/cover no-repeat;transform-origin:50% 60%;transform:scale(1);filter:brightness(var(--lum));transition:transform 12s cubic-bezier(.35,0,.65,1),filter 2.5s ease-in-out}
 .wflag{position:absolute;inset:0;background:var(--fan);-webkit-mask:url(img/walk_flag.png) 50% 57%/cover no-repeat;mask:url(img/walk_flag.png) 50% 57%/cover no-repeat;mix-blend-mode:color;opacity:0;transition:opacity 1.6s ease-in-out .4s}
 .wflag.lit{mix-blend-mode:soft-light;background:var(--fan2)}
-.walk.on .wflag{opacity:1}
-.walk{--fan:#2f6fe8;--fan2:rgba(80,140,255,.5)}
-.walk.w-commune{--fan:#8c939c;--fan2:rgba(200,205,215,.45)}
-.walk.w-ultra{--fan:#9a4dff;--fan2:rgba(190,130,255,.6)}
-.walk.w-legend{--fan:#ffc21a;--fan2:rgba(255,225,120,.95)}
-.walk.w-mythic{--fan:linear-gradient(100deg,#ff5fb0,#ffd84a,#4dffc0,#4db8ff,#b77bff,#ff5fb0) 0 0/300% 100%;--fan2:linear-gradient(100deg,rgba(255,150,210,.8),rgba(255,240,140,.8),rgba(140,255,220,.8),rgba(140,200,255,.8),rgba(210,170,255,.8),rgba(255,150,210,.8)) 0 0/300% 100%}
-.walk.w-mythic .wflag{animation:wfan 6s linear infinite}
+.walk.on .wflag{opacity:.7}
+.walk.on .wflag.lit{opacity:.35}
+.walk{--fan:#3f6fb8;--fan2:rgba(90,130,200,.35)}
+.walk.w-commune{--fan:#80868e;--fan2:rgba(180,185,195,.25)}
+.walk.w-ultra{--fan:#7d55c0;--fan2:rgba(160,120,220,.35)}
+.walk.w-legend{--fan:#c99a30;--fan2:rgba(230,200,120,.4)}
+.walk.w-mythic{--fan:linear-gradient(100deg,#c76a9a,#c9ad5a,#5ab89a,#5a8fc0,#8f6fc0,#c76a9a) 0 0/300% 100%;--fan2:linear-gradient(100deg,rgba(230,160,200,.4),rgba(235,220,150,.4),rgba(150,225,200,.4),rgba(150,190,235,.4),rgba(200,175,235,.4),rgba(230,160,200,.4)) 0 0/300% 100%}
+.walk.w-mythic .wflag{animation:wfan 12s linear infinite}
 @keyframes wfan{to{background-position:300% 0}}
 .walk.s4 .wbg,.walk.s5 .wbg{filter:brightness(var(--lum2)) saturate(1.15)}
 .wrays{position:absolute;left:50%;top:60%;width:240vmax;height:240vmax;transform:translate(-50%,-50%);mix-blend-mode:screen;opacity:var(--ray);background:repeating-conic-gradient(from 0deg,rgba(255,255,255,.55) 0deg 3deg,transparent 3deg 14deg);-webkit-mask:radial-gradient(circle,#000 0%,rgba(0,0,0,.5) 18%,transparent 45%);mask:radial-gradient(circle,#000 0%,rgba(0,0,0,.5) 18%,transparent 45%);animation:wspin 60s linear infinite;transition:opacity 2.5s ease-in-out}
@@ -1057,7 +1058,7 @@ const esc = s => String(s).replace(/[&<>"]/g, c => ({'&':'&amp;','<':'&lt;','>':
 const pick = a => a[Math.floor(Math.random()*a.length)];
 
 /* ---------- mise à jour automatique (app installée sur l'écran d'accueil) ---------- */
-const APP_VER = '1.36.3';
+const APP_VER = '1.36.4';
 async function checkUpdate(){
  if(location.protocol.indexOf('http')!==0 || location.hostname.indexOf('claude')>=0) return;
  try {
