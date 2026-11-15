@@ -1047,7 +1047,7 @@ const esc = s => String(s).replace(/[&<>"]/g, c => ({'&':'&amp;','<':'&lt;','>':
 const pick = a => a[Math.floor(Math.random()*a.length)];
 
 /* ---------- mise à jour automatique (app installée sur l'écran d'accueil) ---------- */
-const APP_VER = '1.36.1';
+const APP_VER = '1.36.2';
 async function checkUpdate(){
  if(location.protocol.indexOf('http')!==0 || location.hostname.indexOf('claude')>=0) return;
  try {
@@ -1469,6 +1469,8 @@ const PACKS = {
   txt:'<b>10 cartes</b> : <b>7 communes</b> et <b>3 rares ou mieux</b>. La meilleure sort du couloir !', pct:'chaque carte rare ou mieux : rare 80 %, ultra rare 17 %, légendaire 3 %'},
  premium: {nom:'Paquet Premium', prix:3000, walk:true, slots:[{ultra:.91, legend:.08, mythic:.01}, {ultra:.91, legend:.08, mythic:.01}],
   txt:'<b>2 cartes</b>, ultra rares ou mieux garanties', pct:'chaque carte : ultra rare 91 %, légendaire 8 %, ultra légendaire 1 %'},
+ test_ul: {nom:'Paquet Test Ultime', prix:0, walk:true, until:'2026-11-15T22:59:00Z', fin:'23h59', slots:[{mythic:1}],
+  txt:'<b>1 ultra légendaire</b> garantie (paquet de test)', pct:'ultra légendaire 100 %'},
  golden: {nom:'Paquet Golden', prix:8000, walk:true, slots:[{legend:.95, mythic:.05}],
   txt:'<b>1 seule carte</b>, légendaire ou mieux garantie', pct:'légendaire 95 %, ultra légendaire 5 %'},
 };
