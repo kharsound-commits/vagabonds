@@ -706,33 +706,34 @@ body.homemode .wrap{padding:0 10px 30px}
 .deal.n5{flex-wrap:wrap;max-width:min(96vw,980px);gap:12px}
 .deal.n5 .pc{width:min(17vw,160px)}
 @media (max-aspect-ratio:1/1){.deal.n5 .pc{width:min(26vw,150px)}.deal.n5{gap:30px 8px}}
-.walk{position:absolute;inset:0;z-index:20;pointer-events:none;opacity:0;transition:opacity .7s;overflow:hidden;perspective:800px;--wc:#4c8df0;--wc2:#cfe0ff;background:radial-gradient(circle at 50% 50%,#12305e 0%,#050b18 55%,#000 100%)}
-.walk.w-commune{--wc:#b9c3cf;--wc2:#fff;background:radial-gradient(circle,#2b333d 0%,#0a0c10 55%,#000)}
-.walk.w-ultra{--wc:#a774f2;--wc2:#ead9ff;background:radial-gradient(circle,#3a1666 0%,#0d0418 55%,#000)}
-.walk.w-legend{--wc:#ffc83a;--wc2:#fff3c4;background:radial-gradient(circle,#6a4500 0%,#1a0f00 55%,#000)}
-.walk.w-mythic{--wc:#d0a0ff;--wc2:#7dffcf;background:radial-gradient(circle,#2a0f4a 0%,#07030f 55%,#000)}
-.walk.on{opacity:1}.walk.out{opacity:0;transition:opacity .6s}
-.wtun{position:absolute;inset:0;display:flex;align-items:center;justify-content:center}
-.wtun i{position:absolute;width:62vmin;height:84vmin;border:3px solid var(--wc);border-radius:22px;box-shadow:0 0 18px var(--wc),inset 0 0 18px var(--wc);opacity:0;animation:wring 2.6s linear infinite;animation-delay:calc(var(--k)*-.325s)}
-.walk.mcol .wtun i{animation-name:wring,wcol}
-@keyframes wcol{0%{border-color:#ff7fc0;box-shadow:0 0 18px #ff7fc0}33%{border-color:#7dffcf;box-shadow:0 0 18px #7dffcf}66%{border-color:#7fd0ff;box-shadow:0 0 18px #7fd0ff}100%{border-color:#ff7fc0;box-shadow:0 0 18px #ff7fc0}}
-@keyframes wring{0%{transform:scale(.04);opacity:0}12%{opacity:.95}100%{transform:scale(2.8);opacity:0}}
-.walk.s4 .wtun i{animation-duration:.6s}
-.wfloor{position:absolute;left:-50%;right:-50%;bottom:-10%;height:55%;transform:rotateX(72deg);transform-origin:50% 100%;background:repeating-linear-gradient(90deg,transparent 0 46px,var(--wc) 46px 48px),linear-gradient(transparent,rgba(0,0,0,.6));opacity:.25;-webkit-mask:linear-gradient(transparent,#000 60%);mask:linear-gradient(transparent,#000 60%)}
-.wglow{position:absolute;left:50%;top:50%;width:26vmin;height:26vmin;transform:translate(-50%,-50%);border-radius:50%;background:radial-gradient(circle,#fff 0%,var(--wc2) 22%,var(--wc) 48%,transparent 70%);filter:blur(3px);animation:wpulse 1.3s ease-in-out infinite alternate;transition:width .8s,height .8s,opacity .5s}
-@keyframes wpulse{to{transform:translate(-50%,-50%) scale(1.25)}}
-.walk.s4 .wglow{width:60vmin;height:60vmin;opacity:1;animation-duration:.2s}
-.walk.s5 .wglow{width:90vmin;height:90vmin;opacity:.55}
-.wst{position:absolute;left:50%;top:50%;transform:translate(-50%,-50%) scale(.08);opacity:0;display:flex;flex-direction:column;align-items:center;gap:8px;text-align:center;width:92vw;transition:transform .7s cubic-bezier(.2,1.4,.4,1),opacity .45s;z-index:2}
-.wst b{font-size:clamp(34px,8.5vw,92px);line-height:1.05;letter-spacing:.06em;color:#fff;text-shadow:0 0 14px var(--wc),0 0 36px var(--wc),0 4px 4px #000}
-.wlab{font-family:'Vagabonds Forge','Bangers';font-size:clamp(14px,2.4vw,24px);letter-spacing:.35em;color:var(--wc2);text-shadow:0 0 8px var(--wc),0 2px 3px #000;border-top:2px solid var(--wc);border-bottom:2px solid var(--wc);padding:3px 18px}
-.ws3 svg{width:clamp(80px,16vw,150px);height:clamp(80px,16vw,150px);filter:drop-shadow(0 0 14px var(--ec)) drop-shadow(0 0 32px var(--ec))}
-.ws3 b{text-shadow:0 0 14px var(--ec),0 0 36px var(--ec),0 4px 4px #000}
-.walk.s1 .ws1,.walk.s2 .ws2,.walk.s3 .ws3{opacity:1;transform:translate(-50%,-50%) scale(1);transition-delay:.3s}
-.walk.s2 .ws1,.walk.s3 .ws2,.walk.s4 .ws3{opacity:0;transform:translate(-50%,-50%) scale(3.2);transition:transform .4s ease-in,opacity .28s;transition-delay:0s}
-.walk.s1 .wglow,.walk.s2 .wglow,.walk.s3 .wglow{opacity:.35;width:18vmin;height:18vmin}
-.wcard{position:absolute;left:50%;top:50%;width:min(46vw,200px,34vh);aspect-ratio:2/3;transform:translate(-50%,-50%) scale(.04);opacity:0;transition:transform 1.1s cubic-bezier(.2,1.3,.3,1),opacity .35s;z-index:3}
-.walk.s5 .wcard{opacity:1;transform:translate(-50%,-50%) scale(1.3)}
+.walk{position:absolute;inset:0;z-index:20;pointer-events:none;opacity:0;transition:opacity 1.2s;overflow:hidden;background:#000;--wc:#4c8df0;--wc2:#cfe0ff;--wt:rgba(40,90,200,.18)}
+.walk.w-commune{--wc:#c9d2dc;--wc2:#fff;--wt:rgba(0,0,0,0)}
+.walk.w-ultra{--wc:#a774f2;--wc2:#ead9ff;--wt:rgba(110,40,200,.24)}
+.walk.w-legend{--wc:#ffc83a;--wc2:#fff3c4;--wt:rgba(255,170,30,.16)}
+.walk.w-mythic{--wc:#d0a0ff;--wc2:#7dffcf;--wt:rgba(90,30,160,.32)}
+.walk.on{opacity:1}.walk.out{opacity:0;transition:opacity .9s}
+.wbg{position:absolute;inset:0;background:url(img/walk_tunnel.jpg) 50% 57%/cover no-repeat;transform-origin:50% 60%;transform:scale(1);transition:transform 12s cubic-bezier(.35,0,.65,1)}
+.walk.on .wbg{transform:scale(1.5)}
+.walk.s4 .wbg{transform:scale(2.3);transition:transform 2.4s cubic-bezier(.45,0,.4,1)}
+.wtint{position:absolute;inset:0;background:var(--wt);mix-blend-mode:color;transition:background 1s}
+.walk.w-mythic .wtint{animation:whue 9s linear infinite}
+@keyframes whue{0%{background:rgba(150,40,200,.32)}33%{background:rgba(30,150,170,.3)}66%{background:rgba(200,60,140,.3)}100%{background:rgba(150,40,200,.32)}}
+.wdim{position:absolute;inset:0;background:radial-gradient(ellipse at 50% 55%,rgba(0,0,0,.15) 0%,rgba(0,0,0,.55) 70%,rgba(0,0,0,.8) 100%);opacity:.6;transition:opacity 1.2s}
+.walk.s1 .wdim,.walk.s2 .wdim,.walk.s3 .wdim{opacity:1}
+.walk.s4 .wdim{opacity:.3}
+.wglow{position:absolute;left:50%;top:60%;width:24vmin;height:24vmin;transform:translate(-50%,-50%);border-radius:50%;mix-blend-mode:screen;background:radial-gradient(circle,var(--wc2) 0%,var(--wc) 35%,transparent 70%);opacity:.55;animation:wbreath 3.2s ease-in-out infinite alternate;transition:width 2.2s ease-in-out,height 2.2s ease-in-out,opacity 1.5s}
+@keyframes wbreath{from{filter:blur(6px) brightness(.85)}to{filter:blur(10px) brightness(1.15)}}
+.walk.s4 .wglow{width:85vmin;height:85vmin;opacity:.9}
+.walk.s5 .wglow{width:110vmin;height:110vmin;opacity:.6;top:50%;transition:all 2s ease-out}
+.wst{position:absolute;left:50%;top:46%;transform:translate(-50%,-50%) scale(.92);opacity:0;filter:blur(10px);display:flex;flex-direction:column;align-items:center;gap:10px;text-align:center;width:92vw;transition:transform 1.1s ease-out,opacity 1s ease-out,filter 1s ease-out;z-index:2}
+.wst b{font-size:clamp(34px,8vw,88px);line-height:1.05;letter-spacing:.06em;color:#fff;text-shadow:0 0 18px var(--wc),0 0 40px rgba(0,0,0,.9),0 4px 6px #000}
+.wlab{font-family:'Vagabonds Forge','Bangers';font-size:clamp(14px,2.3vw,24px);letter-spacing:.35em;color:var(--wc2);text-shadow:0 0 8px var(--wc),0 2px 3px #000;border-top:2px solid var(--wc);border-bottom:2px solid var(--wc);padding:4px 20px;background:rgba(0,0,0,.35)}
+.ws3 svg{width:clamp(80px,15vw,140px);height:clamp(80px,15vw,140px);filter:drop-shadow(0 0 14px var(--ec)) drop-shadow(0 0 30px var(--ec))}
+.ws3 b{text-shadow:0 0 18px var(--ec),0 0 40px rgba(0,0,0,.9),0 4px 6px #000}
+.walk.s1 .ws1,.walk.s2 .ws2,.walk.s3 .ws3{opacity:1;filter:blur(0);transform:translate(-50%,-50%) scale(1);transition-delay:.6s}
+.walk.s2 .ws1,.walk.s3 .ws2,.walk.s4 .ws3{opacity:0;filter:blur(8px);transform:translate(-50%,-50%) scale(1.08);transition:transform .8s ease-in,opacity .7s ease-in,filter .7s ease-in;transition-delay:0s}
+.wcard{position:absolute;left:50%;top:60%;width:min(46vw,200px,34vh);aspect-ratio:2/3;transform:translate(-50%,-50%) scale(.04);opacity:0;transition:transform 2s cubic-bezier(.22,.9,.3,1),top 2s cubic-bezier(.22,.9,.3,1),opacity .9s;z-index:3}
+.walk.s5 .wcard{opacity:1;top:52%;transform:translate(-50%,-50%) scale(1.3)}
 .wcard .card{width:100%;height:100%}
 .wcard.r-rare .card{box-shadow:0 0 30px rgba(76,141,240,.9)}
 .wcard.r-ultra .card{box-shadow:0 0 40px rgba(167,116,242,1),0 0 80px rgba(167,116,242,.5)}
@@ -1032,7 +1033,7 @@ const esc = s => String(s).replace(/[&<>"]/g, c => ({'&':'&amp;','<':'&lt;','>':
 const pick = a => a[Math.floor(Math.random()*a.length)];
 
 /* ---------- mise à jour automatique (app installée sur l'écran d'accueil) ---------- */
-const APP_VER = '1.34.0';
+const APP_VER = '1.34.1';
 async function checkUpdate(){
  if(location.protocol.indexOf('http')!==0 || location.hostname.indexOf('claude')>=0) return;
  try {
@@ -1630,33 +1631,33 @@ function revealMythic(el, finish){
 function walkout(){
  if(!PK) return;
  const fx = fxEl(), n = PK.pull.length, p = PK.pull[PK.order[n-1]], k = p.k, c = CARDS[k], r = c.r, e = EL[c.el], st = c.kind==='stade';
- const d = {commune:900, rare:1100, ultra:1350, legend:1550, mythic:1750}[r];
+ const d = {commune:2200, rare:2300, ultra:2500, legend:2700, mythic:2900}[r];
  const ico = e ? `<svg viewBox="0 0 24 24" fill="${e.fill}" stroke="${e.stroke}" stroke-width="${e.sw}" stroke-linecap="round" stroke-linejoin="round">${e.svg}</svg>` : '';
  const w = document.createElement('div'); w.className = `walk w-${r}`; w.id = 'walk'; w.style.setProperty('--ec', e ? e.c : '#ffd75a');
- w.innerHTML = `<div class="wtun">${Array.from({length:8},(_,j)=>`<i style="--k:${j}"></i>`).join('')}</div><div class="wfloor"></div><div class="wglow"></div>
+ w.innerHTML = `<div class="wbg"></div><div class="wtint"></div><div class="wglow"></div><div class="wdim"></div>
   <div class="wst ws1"><span class="wlab">ÉQUIPE</span><b class="fg">${esc(st ? 'Stade' : (c.team||'')).toUpperCase()}</b></div>
   <div class="wst ws2"><span class="wlab">${st?'TERRAIN':'POINTS DE VIE'}</span><b class="fg">${st?'★':c.pv}</b></div>
   <div class="wst ws3">${ico}<b class="fg">${st ? 'STADE' : (e?e.n:'').toUpperCase()}</b></div>
   <div class="wcard r-${r}">${cardHTML(k)}${p.isNew?'<span class="tag new wnew">Nouveau !</span>':''}</div>`;
  fx.appendChild(w); void w.offsetWidth; w.classList.add('on'); sfx('rumble', r==='commune'||r==='rare' ? .6 : 1.1);
  if(r==='mythic') pkLater(() => w.classList.add('mcol'), 30);
- const T0 = 1000;
+ const T0 = 1800;
  pkLater(() => { w.classList.add('s1'); sfx('swoosh'); }, T0);
  pkLater(() => { w.classList.add('s2'); sfx('coin'); }, T0 + d);
  pkLater(() => { w.classList.add('s3'); sfx('swoosh'); }, T0 + 2*d);
  const tc = T0 + 3*d;
  pkLater(() => { w.classList.add('s4'); sfx(r==='rare'||r==='commune' ? 'swoosh' : r==='mythic' ? 'mythCharge' : r==='legend' ? 'legendCharge' : 'charge'); }, tc);
- const tb = tc + (r==='mythic' ? 1500 : r==='legend' ? 1200 : r==='ultra' ? 900 : 600);
+ const tb = tc + (r==='mythic' ? 2200 : r==='legend' ? 1900 : r==='ultra' ? 1600 : 1300);
  pkLater(() => {
   w.classList.add('s5'); const card = w.querySelector('.wcard'), bn = document.getElementById('lgBanner');
   const banner = t => { bn.textContent = t; bn.classList.toggle('myth', r==='mythic'); bn.classList.toggle('ultra', r==='ultra'); bn.classList.remove('go'); void bn.offsetWidth; bn.classList.add('go'); };
-  if(r==='commune' || r==='rare'){ sfx('flip', r); fxFlash('rgba(120,170,255,.6)', 600); fxSparks(card, ['#8fb8ff','#cfe0ff','#fff'], 22, 160); }
-  else if(r==='ultra'){ sfx('flip','ultra'); sfx('throw', 0, 'elec'); fxFlash('rgba(170,100,255,.7)', 600); fxSparks(card, ['#cfa8ff','#a774f2','#7a3cff','#fff'], 40, 240); banner('ULTRA RARE !'); }
-  else if(r==='legend'){ sfx('flip','legend'); fxFlash('rgba(255,250,225,.95)', 900); fxBoom(); fxSparks(card, ['#ffd75a','#fff3b0','#ff9a3d','#fff'], 56, 280); fxRain(70); banner('LÉGENDAIRE !'); }
-  else { sfx('mythBlast'); fxFlash('rgba(255,255,255,1)', 1100); fxBoom(); fxSparks(card, ['#ff7fc0','#ffe27a','#7dffcf','#7fd0ff','#d0a0ff','#fff'], 110, 380); fxRain(140); banner('ULTRA LÉGENDAIRE !');
-   pkLater(() => { fxFlash('rgba(200,160,255,.85)', 800); fxBoom(); }, 800); }
+  // effets doux : pas de flash blanc ni de secousse
+  if(r==='commune' || r==='rare'){ sfx('flip', r); fxFlash('rgba(120,170,255,.22)', 1400); pkLater(() => fxSparks(card, ['#8fb8ff','#cfe0ff','#fff'], 14, 150), 900); }
+  else if(r==='ultra'){ sfx('flip','ultra'); fxFlash('rgba(170,100,255,.25)', 1500); pkLater(() => { fxSparks(card, ['#cfa8ff','#a774f2','#fff'], 22, 200); banner('ULTRA RARE !'); }, 900); }
+  else if(r==='legend'){ sfx('flip','legend'); fxFlash('rgba(255,225,150,.3)', 1600); pkLater(() => { fxSparks(card, ['#ffd75a','#fff3b0','#ff9a3d'], 28, 240); fxRain(35); banner('LÉGENDAIRE !'); }, 1000); }
+  else { sfx('mythBlast'); fxFlash('rgba(225,200,255,.35)', 1800); pkLater(() => { fxSparks(card, ['#ff7fc0','#ffe27a','#7dffcf','#7fd0ff','#d0a0ff'], 40, 280); fxRain(60); banner('ULTRA LÉGENDAIRE !'); }, 1100); }
  }, tb);
- pkLater(walkEnd, tb + ({commune:1700, rare:1900, ultra:2500, legend:3200, mythic:4000}[r]));
+ pkLater(walkEnd, tb + ({commune:2800, rare:3000, ultra:3500, legend:4000, mythic:4600}[r]));
 }
 // fin du couloir : récap des 5 cartes, toutes retournées
 function walkEnd(){
