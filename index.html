@@ -427,11 +427,6 @@ body.homemode .wrap{padding:0 10px 30px}
 @keyframes zb{0%{opacity:1}20%{opacity:.2}35%{opacity:1}60%{opacity:.6}100%{opacity:0}}
 .beam{height:26px;transform-origin:0 50%;filter:drop-shadow(0 0 4px #ffd33d) drop-shadow(0 0 12px #ffd33d);animation:zb .45s steps(1) forwards}
 .beam svg{width:100%;height:100%}
-.sigfly{position:absolute;pointer-events:none;z-index:7;will-change:transform,left,top}
-.sigfly img{display:block;width:100%;height:auto;transform-origin:50% 55%;animation:sigflap .3s ease-in-out infinite alternate;filter:drop-shadow(0 0 14px rgba(180,225,255,.75)) drop-shadow(0 0 30px rgba(255,235,170,.4))}
-@keyframes sigflap{from{transform:scaleY(1.04)}to{transform:scaleY(.86)}}
-.sigwisp{position:absolute;height:10px;transform:translate(-50%,-50%);border-radius:50%;background:radial-gradient(ellipse,rgba(220,240,255,.8),rgba(150,200,255,.25) 50%,transparent 70%);filter:blur(2px);pointer-events:none;animation:sigwisp .7s ease-out forwards}
-@keyframes sigwisp{from{opacity:.9}to{opacity:0;transform:translate(-50%,-50%) scaleX(1.6) scaleY(.4)}}
 .orb{transform:translate(-50%,-50%);border-radius:50%;background:radial-gradient(circle at 40% 35%,#fff 0 15%,var(--c) 45%,transparent 72%);box-shadow:0 0 22px 6px var(--c),0 0 50px 10px var(--c)}
 .orb.leaf{border-radius:0 80% 0 80%}
 .orb.smoke{background:radial-gradient(circle,#fff 0 8%,#7a3ccf 35%,rgba(20,0,40,.6) 70%,transparent 75%)}
@@ -1063,7 +1058,7 @@ const esc = s => String(s).replace(/[&<>"]/g, c => ({'&':'&amp;','<':'&lt;','>':
 const pick = a => a[Math.floor(Math.random()*a.length)];
 
 /* ---------- mise à jour automatique (app installée sur l'écran d'accueil) ---------- */
-const APP_VER = '1.37.0';
+const APP_VER = '1.37.1';
 async function checkUpdate(){
  if(location.protocol.indexOf('http')!==0 || location.hostname.indexOf('claude')>=0) return;
  try {
@@ -2427,26 +2422,6 @@ function projectile(a, b, elmt, dur){ const ea = fEl(a), eb = fEl(b); if(!ea || 
  const o = fxAdd('orb '+(PT_SHAPE[elmt]||''), A.x, A.y); if(!o) return; o.style.setProperty('--c', col); o.style.width = o.style.height = (A.w*.45)+'px';
  o.animate([{transform:'translate(-50%,-50%) scale(.4)', left:A.x+'px', top:A.y+'px'},{transform:'translate(-50%,-50%) scale(1.15)', offset:.3},{transform:'translate(-50%,-50%) scale(1)', left:B.x+'px', top:B.y+'px'}], {duration:dur, easing:'cubic-bezier(.5,0,.9,.6)', fill:'forwards'});
  setTimeout(() => o.remove(), dur+30); }
-/* animations signature : une créature sort de la carte et fond sur l'adversaire */
-const SIG = {M_Main:'sig_kent.webp'};
-function sigFly(f, tgs, src){
- const a = fEl(f); if(!a) return; const A = relC(a.querySelector('.fcard')||a);
- const pts = tgs.map(t => fEl(t)).filter(Boolean).map(e => relC(e.querySelector('.fcard')||e)); if(!pts.length) return;
- const B = {x: pts.reduce((t,p) => t+p.x, 0)/pts.length, y: pts.reduce((t,p) => t+p.y, 0)/pts.length};
- const W = Math.min(A.sw*.55, 560), dir = B.x >= A.x ? 1 : -1, fl = `scaleX(${dir})`, midY = Math.min(A.y, B.y) - W*.3;
- const d = fxAdd('sigfly', A.x, A.y, `<img src="img/${src}" alt="">`); if(!d) return; d.style.width = W+'px';
- d.animate([
-  {transform:`translate(-50%,-50%) ${fl} scale(.1)`, left:A.x+'px', top:A.y+'px', opacity:0, filter:'brightness(3) blur(6px)'},
-  {transform:`translate(-50%,-50%) ${fl} scale(.5)`, left:A.x+'px', top:(A.y - W*.18)+'px', opacity:1, filter:'brightness(1.7) blur(0px)', offset:.2},
-  {transform:`translate(-50%,-50%) ${fl} scale(.85) rotate(-10deg)`, left:(A.x+(B.x-A.x)*.28)+'px', top:midY+'px', opacity:1, filter:'brightness(1.1) blur(0px)', offset:.46},
-  {transform:`translate(-50%,-50%) ${fl} scale(1.05) rotate(14deg)`, left:B.x+'px', top:B.y+'px', opacity:1, filter:'brightness(1.35) blur(0px)', offset:.8},
-  {transform:`translate(-50%,-50%) ${fl} scale(1.2) rotate(18deg)`, left:(B.x+dir*W*.45)+'px', top:(B.y+W*.08)+'px', opacity:0, filter:'brightness(2) blur(4px)'}
- ], {duration:1400, easing:'cubic-bezier(.4,0,.6,1)', fill:'forwards'});
- // traînée de vent derrière l'aigle
- for(let i=0;i<7;i++) setTimeout(() => { if(!d.isConnected) return; const r = d.getBoundingClientRect(), L = document.getElementById('fxl'); if(!L) return; const s0 = L.getBoundingClientRect();
-  const w = fxAdd('sigwisp', r.left - s0.left + r.width/2 - dir*r.width*.3, r.top - s0.top + r.height/2); if(w){ w.style.width = (r.width*.5)+'px'; setTimeout(() => w.remove(), 700); } }, 350 + i*110);
- setTimeout(() => d.remove(), 1450);
-}
 function cutIn(f){ const col = ELC[f.c.el] || '#fff'; const l = document.getElementById('fxl'); if(!l) return;
  const d = document.createElement('div'); d.className = 'cutin '+(f.side==='p'?'from-l':'from-r'); d.style.setProperty('--ec', col);
  d.innerHTML = `<div class="ci-band"></div><div class="ci-art" style="background-image:url('img/${f.k}.jpg')"></div><div class="ci-txt"><small>${esc(f.c.nom.toUpperCase())}</small><b class="fg">${esc(f.c.sn.toUpperCase())} !</b></div>`;
@@ -2486,11 +2461,9 @@ function afterCombatRender(){
      targets = [...new Set([...alive(ev.f.side==='p'?'e':'p'), ...hitF])]; }
     else if(['healteam','teaminv','teamhalf'].includes(sp)) targets = alive(ev.f.side);
     else if(!ev.tgt) targets = [ev.f];
-    const sig = SIG[ev.f.k] && targets.some(tg => tg.side!==ev.f.side) ? SIG[ev.f.k] : null;
-    const hitAt = base + (sig ? 1750 : 1250);
-    if(sig){ later(() => sigFly(ev.f, targets.filter(tg => tg.side!==ev.f.side), sig), base + 650); sfxAt(base+700, 'swoosh'); sfxAt(base+1150, 'throw', 0, 'air'); sfxAt(base+1450, 'swoosh'); }
+    const hitAt = base + 1250;
     targets.forEach((tg,i) => {
-     if(tg!==ev.f && !sig){ later(() => projectile(ev.f, tg, elmt, 360), base + 880 + i*60); if(i===0) sfxAt(base+880, 'throw', 0, elmt); }
+     if(tg!==ev.f){ later(() => projectile(ev.f, tg, elmt, 360), base + 880 + i*60); if(i===0) sfxAt(base+880, 'throw', 0, elmt); }
      later(() => { burstAt(tg, elmt, tg.side!==ev.f.side); }, hitAt + i*60);
     });
     if(targets.some(tg => tg.side!==ev.f.side)){ later(() => shakeArena(true), hitAt); sfxAt(hitAt, 'impact', elmt); }
