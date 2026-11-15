@@ -707,12 +707,22 @@ body.homemode .wrap{padding:0 10px 30px}
 .deal.n5 .pc{width:min(17vw,160px)}
 @media (max-aspect-ratio:1/1){.deal.n5 .pc{width:min(26vw,150px)}.deal.n5{gap:30px 8px}}
 .walk{position:absolute;inset:0;z-index:20;pointer-events:none;opacity:0;transition:opacity 1.2s;overflow:hidden;background:#000;--wc:#4c8df0;--wc2:#cfe0ff;--wt:rgba(40,90,200,.18)}
-.walk.w-commune{--wc:#c9d2dc;--wc2:#fff;--wt:rgba(0,0,0,0)}
-.walk.w-ultra{--wc:#a774f2;--wc2:#ead9ff;--wt:rgba(110,40,200,.24)}
-.walk.w-legend{--wc:#ffc83a;--wc2:#fff3c4;--wt:rgba(255,170,30,.16)}
-.walk.w-mythic{--wc:#d0a0ff;--wc2:#7dffcf;--wt:rgba(90,30,160,.32)}
+.walk{--lum:.72;--lum2:.95;--ray:0;--ray2:.12;--gs:60vmin;--go:.75}
+.walk.w-commune{--wc:#c9d2dc;--wc2:#fff;--wt:rgba(0,0,0,0);--lum:.62;--lum2:.85;--ray2:0;--gs:50vmin;--go:.6}
+.walk.w-ultra{--wc:#a774f2;--wc2:#ead9ff;--wt:rgba(110,40,200,.24);--lum:.88;--lum2:1.15;--ray:.12;--ray2:.35;--gs:85vmin;--go:.9}
+.walk.w-legend{--wc:#ffc83a;--wc2:#fff3c4;--wt:rgba(255,170,30,.16);--lum:1;--lum2:1.35;--ray:.25;--ray2:.6;--gs:110vmin;--go:1}
+.walk.w-mythic{--wc:#d0a0ff;--wc2:#7dffcf;--wt:rgba(90,30,160,.32);--lum:1.08;--lum2:1.5;--ray:.35;--ray2:.75;--gs:130vmin;--go:1}
 .walk.on{opacity:1}.walk.out{opacity:0;transition:opacity .9s}
-.wbg{position:absolute;inset:0;background:url(img/walk_tunnel.jpg) 50% 57%/cover no-repeat;transform-origin:50% 60%;transform:scale(1);transition:transform 12s cubic-bezier(.35,0,.65,1)}
+.wbg{position:absolute;inset:0;background:url(img/walk_tunnel.jpg) 50% 57%/cover no-repeat;transform-origin:50% 60%;transform:scale(1);filter:brightness(var(--lum));transition:transform 12s cubic-bezier(.35,0,.65,1),filter 2.5s ease-in-out}
+.walk.s4 .wbg,.walk.s5 .wbg{filter:brightness(var(--lum2)) saturate(1.15)}
+.wrays{position:absolute;left:50%;top:60%;width:240vmax;height:240vmax;transform:translate(-50%,-50%);mix-blend-mode:screen;opacity:var(--ray);background:repeating-conic-gradient(from 0deg,rgba(255,255,255,.55) 0deg 3deg,transparent 3deg 14deg);-webkit-mask:radial-gradient(circle,#000 0%,rgba(0,0,0,.5) 18%,transparent 45%);mask:radial-gradient(circle,#000 0%,rgba(0,0,0,.5) 18%,transparent 45%);animation:wspin 60s linear infinite;transition:opacity 2.5s ease-in-out}
+.walk.s4 .wrays,.walk.s5 .wrays{opacity:var(--ray2)}
+.walk.w-legend .wrays{background:repeating-conic-gradient(from 0deg,rgba(255,225,140,.6) 0deg 3deg,transparent 3deg 14deg)}
+.walk.w-mythic .wrays{background:repeating-conic-gradient(from 0deg,rgba(255,150,210,.5) 0deg 3deg,transparent 3deg 9deg,rgba(130,255,220,.5) 9deg 12deg,transparent 12deg 18deg,rgba(150,200,255,.5) 18deg 21deg,transparent 21deg 27deg)}
+@keyframes wspin{to{transform:translate(-50%,-50%) rotate(360deg)}}
+.wmotes{position:absolute;inset:0;pointer-events:none;z-index:1}
+.wmotes i{position:absolute;bottom:-10px;width:var(--s);height:var(--s);border-radius:50%;background:var(--wc2);box-shadow:0 0 8px var(--wc),0 0 14px var(--wc);opacity:0;animation:wmote var(--t) linear var(--d) infinite}
+@keyframes wmote{0%{transform:translate(0,0);opacity:0}15%{opacity:.85}85%{opacity:.6}100%{transform:translate(var(--x),-105vh);opacity:0}}
 .walk.on .wbg{transform:scale(1.5)}
 .walk.s4 .wbg{transform:scale(2.3);transition:transform 2.4s cubic-bezier(.45,0,.4,1)}
 .wtint{position:absolute;inset:0;background:var(--wt);mix-blend-mode:color;transition:background 1s}
@@ -723,7 +733,7 @@ body.homemode .wrap{padding:0 10px 30px}
 .walk.s4 .wdim{opacity:.3}
 .wglow{position:absolute;left:50%;top:60%;width:24vmin;height:24vmin;transform:translate(-50%,-50%);border-radius:50%;mix-blend-mode:screen;background:radial-gradient(circle,var(--wc2) 0%,var(--wc) 35%,transparent 70%);opacity:.55;animation:wbreath 3.2s ease-in-out infinite alternate;transition:width 2.2s ease-in-out,height 2.2s ease-in-out,opacity 1.5s}
 @keyframes wbreath{from{filter:blur(6px) brightness(.85)}to{filter:blur(10px) brightness(1.15)}}
-.walk.s4 .wglow{width:85vmin;height:85vmin;opacity:.9}
+.walk.s4 .wglow{width:var(--gs);height:var(--gs);opacity:var(--go)}
 .walk.s5 .wglow{width:110vmin;height:110vmin;opacity:.6;top:50%;transition:all 2s ease-out}
 .wst{position:absolute;left:50%;top:46%;transform:translate(-50%,-50%) scale(.92);opacity:0;filter:blur(10px);display:flex;flex-direction:column;align-items:center;gap:10px;text-align:center;width:92vw;transition:transform 1.1s ease-out,opacity 1s ease-out,filter 1s ease-out;z-index:2}
 .wst b{font-size:clamp(34px,8vw,88px);line-height:1.05;letter-spacing:.06em;color:#fff;text-shadow:0 0 18px var(--wc),0 0 40px rgba(0,0,0,.9),0 4px 6px #000}
@@ -1033,7 +1043,7 @@ const esc = s => String(s).replace(/[&<>"]/g, c => ({'&':'&amp;','<':'&lt;','>':
 const pick = a => a[Math.floor(Math.random()*a.length)];
 
 /* ---------- mise à jour automatique (app installée sur l'écran d'accueil) ---------- */
-const APP_VER = '1.34.1';
+const APP_VER = '1.34.2';
 async function checkUpdate(){
  if(location.protocol.indexOf('http')!==0 || location.hostname.indexOf('claude')>=0) return;
  try {
@@ -1634,7 +1644,9 @@ function walkout(){
  const d = {commune:2200, rare:2300, ultra:2500, legend:2700, mythic:2900}[r];
  const ico = e ? `<svg viewBox="0 0 24 24" fill="${e.fill}" stroke="${e.stroke}" stroke-width="${e.sw}" stroke-linecap="round" stroke-linejoin="round">${e.svg}</svg>` : '';
  const w = document.createElement('div'); w.className = `walk w-${r}`; w.id = 'walk'; w.style.setProperty('--ec', e ? e.c : '#ffd75a');
- w.innerHTML = `<div class="wbg"></div><div class="wtint"></div><div class="wglow"></div><div class="wdim"></div>
+ const nm = {commune:0, rare:6, ultra:16, legend:30, mythic:44}[r];
+ const motes = Array.from({length:nm}, () => `<i style="left:${(Math.random()*100).toFixed(1)}%;--t:${(7+Math.random()*6).toFixed(1)}s;--d:${(-Math.random()*12).toFixed(1)}s;--s:${(2+Math.random()*4).toFixed(1)}px;--x:${(Math.random()*80-40).toFixed(0)}px"></i>`).join('');
+ w.innerHTML = `<div class="wbg"></div><div class="wtint"></div><div class="wrays"></div><div class="wglow"></div><div class="wdim"></div><div class="wmotes">${motes}</div>
   <div class="wst ws1"><span class="wlab">ÉQUIPE</span><b class="fg">${esc(st ? 'Stade' : (c.team||'')).toUpperCase()}</b></div>
   <div class="wst ws2"><span class="wlab">${st?'TERRAIN':'POINTS DE VIE'}</span><b class="fg">${st?'★':c.pv}</b></div>
   <div class="wst ws3">${ico}<b class="fg">${st ? 'STADE' : (e?e.n:'').toUpperCase()}</b></div>
