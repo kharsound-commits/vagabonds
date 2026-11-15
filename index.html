@@ -702,6 +702,43 @@ body.homemode .wrap{padding:0 10px 30px}
 @keyframes pillar{0%{opacity:0;transform:translateX(-50%) scaleX(.1)}15%{opacity:.6}48%{opacity:1;transform:translateX(-50%) scaleX(1)}55%{opacity:.9}100%{opacity:0;transform:translateX(-50%) scaleX(1.4)}}
 .lg-banner{position:absolute;left:50%;top:14%;transform:translate(-50%,0) scale(3);opacity:0;z-index:30;pointer-events:none;font-size:clamp(34px,7vw,80px);letter-spacing:.12em;color:#ffd75a;white-space:nowrap;
  text-shadow:0 0 20px rgba(255,190,60,.9),0 4px 0 #5a3200,0 8px 20px rgba(0,0,0,.6)}
+.lg-banner.ultra{color:#e6d2ff;text-shadow:0 0 20px rgba(167,116,242,1),0 4px 0 #2a0f55,0 8px 20px rgba(0,0,0,.6)}
+.deal.n5{flex-wrap:wrap;max-width:min(96vw,980px);gap:12px}
+.deal.n5 .pc{width:min(17vw,160px)}
+@media (max-aspect-ratio:1/1){.deal.n5 .pc{width:min(26vw,150px)}.deal.n5{gap:30px 8px}}
+.walk{position:absolute;inset:0;z-index:20;pointer-events:none;opacity:0;transition:opacity .7s;overflow:hidden;perspective:800px;--wc:#4c8df0;--wc2:#cfe0ff;background:radial-gradient(circle at 50% 50%,#12305e 0%,#050b18 55%,#000 100%)}
+.walk.w-commune{--wc:#b9c3cf;--wc2:#fff;background:radial-gradient(circle,#2b333d 0%,#0a0c10 55%,#000)}
+.walk.w-ultra{--wc:#a774f2;--wc2:#ead9ff;background:radial-gradient(circle,#3a1666 0%,#0d0418 55%,#000)}
+.walk.w-legend{--wc:#ffc83a;--wc2:#fff3c4;background:radial-gradient(circle,#6a4500 0%,#1a0f00 55%,#000)}
+.walk.w-mythic{--wc:#d0a0ff;--wc2:#7dffcf;background:radial-gradient(circle,#2a0f4a 0%,#07030f 55%,#000)}
+.walk.on{opacity:1}.walk.out{opacity:0;transition:opacity .6s}
+.wtun{position:absolute;inset:0;display:flex;align-items:center;justify-content:center}
+.wtun i{position:absolute;width:62vmin;height:84vmin;border:3px solid var(--wc);border-radius:22px;box-shadow:0 0 18px var(--wc),inset 0 0 18px var(--wc);opacity:0;animation:wring 2.6s linear infinite;animation-delay:calc(var(--k)*-.325s)}
+.walk.mcol .wtun i{animation-name:wring,wcol}
+@keyframes wcol{0%{border-color:#ff7fc0;box-shadow:0 0 18px #ff7fc0}33%{border-color:#7dffcf;box-shadow:0 0 18px #7dffcf}66%{border-color:#7fd0ff;box-shadow:0 0 18px #7fd0ff}100%{border-color:#ff7fc0;box-shadow:0 0 18px #ff7fc0}}
+@keyframes wring{0%{transform:scale(.04);opacity:0}12%{opacity:.95}100%{transform:scale(2.8);opacity:0}}
+.walk.s4 .wtun i{animation-duration:.6s}
+.wfloor{position:absolute;left:-50%;right:-50%;bottom:-10%;height:55%;transform:rotateX(72deg);transform-origin:50% 100%;background:repeating-linear-gradient(90deg,transparent 0 46px,var(--wc) 46px 48px),linear-gradient(transparent,rgba(0,0,0,.6));opacity:.25;-webkit-mask:linear-gradient(transparent,#000 60%);mask:linear-gradient(transparent,#000 60%)}
+.wglow{position:absolute;left:50%;top:50%;width:26vmin;height:26vmin;transform:translate(-50%,-50%);border-radius:50%;background:radial-gradient(circle,#fff 0%,var(--wc2) 22%,var(--wc) 48%,transparent 70%);filter:blur(3px);animation:wpulse 1.3s ease-in-out infinite alternate;transition:width .8s,height .8s,opacity .5s}
+@keyframes wpulse{to{transform:translate(-50%,-50%) scale(1.25)}}
+.walk.s4 .wglow{width:60vmin;height:60vmin;opacity:1;animation-duration:.2s}
+.walk.s5 .wglow{width:90vmin;height:90vmin;opacity:.55}
+.wst{position:absolute;left:50%;top:50%;transform:translate(-50%,-50%) scale(.08);opacity:0;display:flex;flex-direction:column;align-items:center;gap:8px;text-align:center;width:92vw;transition:transform .7s cubic-bezier(.2,1.4,.4,1),opacity .45s;z-index:2}
+.wst b{font-size:clamp(34px,8.5vw,92px);line-height:1.05;letter-spacing:.06em;color:#fff;text-shadow:0 0 14px var(--wc),0 0 36px var(--wc),0 4px 4px #000}
+.wlab{font-family:'Vagabonds Forge','Bangers';font-size:clamp(14px,2.4vw,24px);letter-spacing:.35em;color:var(--wc2);text-shadow:0 0 8px var(--wc),0 2px 3px #000;border-top:2px solid var(--wc);border-bottom:2px solid var(--wc);padding:3px 18px}
+.ws3 svg{width:clamp(80px,16vw,150px);height:clamp(80px,16vw,150px);filter:drop-shadow(0 0 14px var(--ec)) drop-shadow(0 0 32px var(--ec))}
+.ws3 b{text-shadow:0 0 14px var(--ec),0 0 36px var(--ec),0 4px 4px #000}
+.walk.s1 .ws1,.walk.s2 .ws2,.walk.s3 .ws3{opacity:1;transform:translate(-50%,-50%) scale(1);transition-delay:.3s}
+.walk.s2 .ws1,.walk.s3 .ws2,.walk.s4 .ws3{opacity:0;transform:translate(-50%,-50%) scale(3.2);transition:transform .4s ease-in,opacity .28s;transition-delay:0s}
+.walk.s1 .wglow,.walk.s2 .wglow,.walk.s3 .wglow{opacity:.35;width:18vmin;height:18vmin}
+.wcard{position:absolute;left:50%;top:50%;width:min(46vw,200px,34vh);aspect-ratio:2/3;transform:translate(-50%,-50%) scale(.04);opacity:0;transition:transform 1.1s cubic-bezier(.2,1.3,.3,1),opacity .35s;z-index:3}
+.walk.s5 .wcard{opacity:1;transform:translate(-50%,-50%) scale(1.3)}
+.wcard .card{width:100%;height:100%}
+.wcard.r-rare .card{box-shadow:0 0 30px rgba(76,141,240,.9)}
+.wcard.r-ultra .card{box-shadow:0 0 40px rgba(167,116,242,1),0 0 80px rgba(167,116,242,.5)}
+.wcard.r-legend .card{box-shadow:0 0 44px rgba(255,205,60,1),0 0 100px rgba(255,170,40,.6)}
+.wcard.r-mythic .card{box-shadow:0 0 44px rgba(220,180,255,1),0 0 100px rgba(90,200,255,.7),0 0 150px rgba(255,80,170,.5)}
+.wnew{position:absolute;left:50%;bottom:-26px;transform:translateX(-50%);white-space:nowrap}
 .lg-banner.myth{background:linear-gradient(90deg,#ff7fc0,#ffe27a,#7dffcf,#7fd0ff,#d0a0ff,#ff7fc0);-webkit-background-clip:text;background-clip:text;color:transparent;filter:drop-shadow(0 0 12px rgba(220,180,255,.9)) drop-shadow(0 3px 4px #000)}
 .cosmos{position:absolute;inset:0;z-index:15;pointer-events:none;opacity:0;transition:opacity .9s;background:radial-gradient(ellipse at 50% 50%,#1a0b33 0%,#07030f 60%,#000 100%)}
 .cosmos.s1{opacity:1}.cosmos.out{opacity:0;transition:opacity .8s}
@@ -995,7 +1032,7 @@ const esc = s => String(s).replace(/[&<>"]/g, c => ({'&':'&amp;','<':'&lt;','>':
 const pick = a => a[Math.floor(Math.random()*a.length)];
 
 /* ---------- mise à jour automatique (app installée sur l'écran d'accueil) ---------- */
-const APP_VER = '1.33.2';
+const APP_VER = '1.34.0';
 async function checkUpdate(){
  if(location.protocol.indexOf('http')!==0 || location.hostname.indexOf('claude')>=0) return;
  try {
@@ -1397,7 +1434,7 @@ function vHome(){
  const arcName = nxt<0 ? 'Histoire terminée' : 'Arc '+(FIGHTS[nxt].a+1)+' · '+DATA.story[FIGHTS[nxt].a].t;
  const Q = [['team','ÉQUIPE',`${S.team.length}/6 persos · ${Object.keys(S.owned).length} cartes`,'36%','62%','31%','11%'],
   ['story','HISTOIRE',arcName,'34%','62%','30%','11%'],
-  ['gacha','TIRAGES','4 paquets, dès 200 pièces','36%','51%','31%','11%'],
+  ['gacha','TIRAGES','4 paquets, dès 300 pièces','36%','51%','31%','11%'],
   ['free','COMBATS LIBRES','Affronte toutes les équipes','34%','51%','30%','11%']];
  return `<div class="menu-bar"><img src="img/ui_logo.webp" alt="Vagabonds"><div style="display:flex;gap:8px;align-items:center"><div class="sndbtns"></div>${lvlBadge()}<div class="gold">● ${S.gold} pièces</div></div></div>
  ${!S.intro?`<p style="text-align:center;max-width:760px;margin:0 auto 10px;color:#fff;text-shadow:0 1px 3px #000">Pour commencer, tu as <b>1 500 pièces</b>, de quoi ouvrir plusieurs paquets. Tire tes premières cartes, forme ton équipe, puis lance l'arc Rencontre.</p>`:''}
@@ -1411,8 +1448,8 @@ let lastPull = null;
 /* trois paquets : les chances de chaque emplacement */
 const RP = {rare:.80, ultra:.17, legend:.03};
 const PACKS = {
- classique: {nom:'Paquet Classique', prix:200, slots:[{commune:1}, {commune:1}, {rare:.93, ultra:.06, legend:.01}],
-  txt:'<b>2 communes</b> et <b>1 rare ou mieux</b>', pct:'rare 93 %, ultra rare 6 %, légendaire 1 %'},
+ classique: {nom:'Paquet Classique', prix:300, walk:true, slots:[{commune:1}, {commune:1}, {commune:1}, {rare:.93, ultra:.06, legend:.01}, {rare:.93, ultra:.06, legend:.01}],
+  txt:'<b>5 cartes</b> : <b>3 communes</b> et <b>2 rares ou mieux</b>. La meilleure sort du couloir !', pct:'chaque carte rare ou mieux : rare 93 %, ultra rare 6 %, légendaire 1 %'},
  avance: {nom:'Paquet Avancé', prix:500, slots:[{commune:1}, RP, RP],
   txt:'<b>1 commune</b> et <b>2 rares ou mieux</b>', pct:'chaque carte rare ou mieux : rare 80 %, ultra rare 17 %, légendaire 3 %'},
  premium: {nom:'Paquet Premium', prix:3000, slots:[{ultra:.91, legend:.08, mythic:.01}],
@@ -1458,7 +1495,7 @@ function packAnim(pull){
   <button class="btn sec sm skip" data-act="pskip">Passer</button>
   <div class="hint" id="fxHint">Touche le paquet pour l'ouvrir&nbsp;!</div>
   <div class="pack" data-act="popen"><img class="pk-top" src="img/pack_top.webp" alt=""><div class="pk-b"><img src="img/pack_body.webp" alt="Paquet Vagabonds"></div>${BOLTS}</div>
-  <div class="deal">${order.map((pi,i) => { const p = pull[pi], c = CARDS[p.k];
+  <div class="deal n${pull.length}">${order.map((pi,i) => { const p = pull[pi], c = CARDS[p.k];
    return `<div class="pc r-${c.r}" style="--i:${i}" data-act="pflip" data-i="${i}"><div class="rays"></div><div class="ring"></div>${c.r==='ultra'||c.r==='legend'||c.r==='mythic'?BOLTS:''}<div class="pc-in"><div class="pc-back">${cardBackHTML()}</div><div class="pc-front">${cardHTML(p.k)}</div></div>${teaseHTML(c)}${p.isNew?'<span class="tag new nw">Nouveau !</span>':''}<div class="lbl">${RNAME[c.r]}</div></div>`; }).join('')}</div>
   <div class="lg-banner fg" id="lgBanner">LÉGENDAIRE !</div>
   <button class="btn gold done" data-act="pdone">Voir mes cartes</button></div>`;
@@ -1491,6 +1528,7 @@ function packOpen(){
  pkLater(() => { pack.classList.add(b); if(b!=='commune') fxFlash(b==='mythic'?'rgba(215,170,255,.75)':b==='legend'?'rgba(255,210,90,.6)':b==='ultra'?'rgba(170,110,255,.55)':'rgba(90,150,255,.45)', 600); }, hype?500:300);
  const tear = hype ? 1300 : 650;
  pkLater(() => { fx.classList.remove('shake','hype'); fx.classList.add('torn'); fxFlash('rgba(255,255,255,.9)', 700); sfx('tear'); sfx('shimmer', .1); if(b==='legend'||b==='mythic') fxBoom(); }, tear);
+ if(PACKS[curPack] && PACKS[curPack].walk){ pkLater(walkout, tear+650); return; }
  pkLater(() => { fx.classList.add('cards'); }, tear+750);
  pkLater(() => { PK.dealt = true; fx.querySelectorAll('.pc').forEach(c => c.classList.add('dealt')); autoNext(); }, tear+1700);
 }
@@ -1588,11 +1626,53 @@ function revealMythic(el, finish){
  pkLater(() => cos.remove(), 7000);
  finish(6800);
 }
+/* ---------- le couloir (façon walkout) : la meilleure carte sort du tunnel ---------- */
+function walkout(){
+ if(!PK) return;
+ const fx = fxEl(), n = PK.pull.length, p = PK.pull[PK.order[n-1]], k = p.k, c = CARDS[k], r = c.r, e = EL[c.el], st = c.kind==='stade';
+ const d = {commune:900, rare:1100, ultra:1350, legend:1550, mythic:1750}[r];
+ const ico = e ? `<svg viewBox="0 0 24 24" fill="${e.fill}" stroke="${e.stroke}" stroke-width="${e.sw}" stroke-linecap="round" stroke-linejoin="round">${e.svg}</svg>` : '';
+ const w = document.createElement('div'); w.className = `walk w-${r}`; w.id = 'walk'; w.style.setProperty('--ec', e ? e.c : '#ffd75a');
+ w.innerHTML = `<div class="wtun">${Array.from({length:8},(_,j)=>`<i style="--k:${j}"></i>`).join('')}</div><div class="wfloor"></div><div class="wglow"></div>
+  <div class="wst ws1"><span class="wlab">ÉQUIPE</span><b class="fg">${esc(st ? 'Stade' : (c.team||'')).toUpperCase()}</b></div>
+  <div class="wst ws2"><span class="wlab">${st?'TERRAIN':'POINTS DE VIE'}</span><b class="fg">${st?'★':c.pv}</b></div>
+  <div class="wst ws3">${ico}<b class="fg">${st ? 'STADE' : (e?e.n:'').toUpperCase()}</b></div>
+  <div class="wcard r-${r}">${cardHTML(k)}${p.isNew?'<span class="tag new wnew">Nouveau !</span>':''}</div>`;
+ fx.appendChild(w); void w.offsetWidth; w.classList.add('on'); sfx('rumble', r==='commune'||r==='rare' ? .6 : 1.1);
+ if(r==='mythic') pkLater(() => w.classList.add('mcol'), 30);
+ const T0 = 1000;
+ pkLater(() => { w.classList.add('s1'); sfx('swoosh'); }, T0);
+ pkLater(() => { w.classList.add('s2'); sfx('coin'); }, T0 + d);
+ pkLater(() => { w.classList.add('s3'); sfx('swoosh'); }, T0 + 2*d);
+ const tc = T0 + 3*d;
+ pkLater(() => { w.classList.add('s4'); sfx(r==='rare'||r==='commune' ? 'swoosh' : r==='mythic' ? 'mythCharge' : r==='legend' ? 'legendCharge' : 'charge'); }, tc);
+ const tb = tc + (r==='mythic' ? 1500 : r==='legend' ? 1200 : r==='ultra' ? 900 : 600);
+ pkLater(() => {
+  w.classList.add('s5'); const card = w.querySelector('.wcard'), bn = document.getElementById('lgBanner');
+  const banner = t => { bn.textContent = t; bn.classList.toggle('myth', r==='mythic'); bn.classList.toggle('ultra', r==='ultra'); bn.classList.remove('go'); void bn.offsetWidth; bn.classList.add('go'); };
+  if(r==='commune' || r==='rare'){ sfx('flip', r); fxFlash('rgba(120,170,255,.6)', 600); fxSparks(card, ['#8fb8ff','#cfe0ff','#fff'], 22, 160); }
+  else if(r==='ultra'){ sfx('flip','ultra'); sfx('throw', 0, 'elec'); fxFlash('rgba(170,100,255,.7)', 600); fxSparks(card, ['#cfa8ff','#a774f2','#7a3cff','#fff'], 40, 240); banner('ULTRA RARE !'); }
+  else if(r==='legend'){ sfx('flip','legend'); fxFlash('rgba(255,250,225,.95)', 900); fxBoom(); fxSparks(card, ['#ffd75a','#fff3b0','#ff9a3d','#fff'], 56, 280); fxRain(70); banner('LÉGENDAIRE !'); }
+  else { sfx('mythBlast'); fxFlash('rgba(255,255,255,1)', 1100); fxBoom(); fxSparks(card, ['#ff7fc0','#ffe27a','#7dffcf','#7fd0ff','#d0a0ff','#fff'], 110, 380); fxRain(140); banner('ULTRA LÉGENDAIRE !');
+   pkLater(() => { fxFlash('rgba(200,160,255,.85)', 800); fxBoom(); }, 800); }
+ }, tb);
+ pkLater(walkEnd, tb + ({commune:1700, rare:1900, ultra:2500, legend:3200, mythic:4000}[r]));
+}
+// fin du couloir : récap des 5 cartes, toutes retournées
+function walkEnd(){
+ if(!PK) return;
+ const fx = fxEl(), w = document.getElementById('walk');
+ if(w){ w.classList.add('out'); setTimeout(() => w.remove(), 700); }
+ fx.classList.add('cards');
+ const pcs = [...fx.querySelectorAll('.pc')];
+ pcs.forEach((c,j) => pkLater(() => { c.classList.add('flip'); sfx('flip', 'commune'); }, 650 + j*140));
+ pkLater(() => { PK.dealt = true; PK.flipped = PK.pull.length; document.getElementById('fxHint').textContent = ''; fx.classList.add('end'); }, 650 + pcs.length*140 + 400);
+}
 function packSkip(){
  if(!PK) return;
  if(PK.flipped>=PK.pull.length || fxEl().classList.contains('end')) return packDone();
  PK.timers.forEach(clearTimeout); PK.timers = []; PK.opened = true; PK.dealt = true; PK.busy = false;
- const fx = fxEl(); fx.classList.remove('shake','hype','spotlight','mythic'); fx.querySelectorAll('.cosmos,.goldsky').forEach(c => c.remove()); fx.classList.remove('mythdark'); fx.querySelectorAll('.pc').forEach(c => c.classList.remove('spot','mspot','charge')); fx.classList.add('torn','cards');
+ const fx = fxEl(); fx.classList.remove('shake','hype','spotlight','mythic'); fx.querySelectorAll('.cosmos,.goldsky,.walk').forEach(c => c.remove()); fx.classList.remove('mythdark'); fx.querySelectorAll('.pc').forEach(c => c.classList.remove('spot','mspot','charge')); fx.classList.add('torn','cards');
  fx.querySelector('.pack').classList.add(PK.best);
  fx.querySelectorAll('.pc').forEach(c => { c.classList.remove('spot','charge'); c.classList.add('dealt','flip'); });
  PK.flipped = PK.pull.length; document.getElementById('fxHint').textContent = ''; fx.classList.add('end');
@@ -1634,12 +1714,12 @@ function vGacha(){
  if(isPortrait()) return `<div class="pscene" style="background-image:url(img/ui_gacha.jpg)">
   <div class="ptitle fg">TIRAGES</div>
   <div class="pkrow p">${ids.map(packBtn).join('')}</div>
-  <p class="pnote">Classique et Avancé : 3 cartes. Premium et Golden : 1 carte. Achats par semaine : Classique illimité, Avancé 50, Premium 20, Golden 10 (retour chaque lundi). Un doublon se vend selon sa rareté (10 à 1000 pièces), ou fait monter la carte d'un niveau (PV, attaque et spéciale).</p>
+  <p class="pnote">Classique : 5 cartes. Avancé : 3 cartes. Premium et Golden : 1 carte. Achats par semaine : Classique illimité, Avancé 50, Premium 20, Golden 10 (retour chaque lundi). Un doublon se vend selon sa rareté (10 à 1000 pièces), ou fait monter la carte d'un niveau (PV, attaque et spéciale).</p>
  </div>${res}`;
  return `<div class="scene-wrap"><div class="scene" style="background-image:url(img/ui_gacha.jpg);--minw:760px">
  <div class="scene-title fg">TIRAGES</div>
  <div class="pkrow">${ids.map(packBtn).join('')}</div>
- <div class="scene-note" style="left:auto;right:1.5cqw">Classique et Avancé : 3 cartes. Premium et Golden : 1 carte. Limites hebdo : retour chaque lundi. Un doublon se vend selon sa rareté (10 à 1000 pièces), ou fait monter la carte d'un niveau (PV, attaque et spéciale).</div>
+ <div class="scene-note" style="left:auto;right:1.5cqw">Classique : 5 cartes. Avancé : 3 cartes. Premium et Golden : 1 carte. Limites hebdo : retour chaque lundi. Un doublon se vend selon sa rareté (10 à 1000 pièces), ou fait monter la carte d'un niveau (PV, attaque et spéciale).</div>
  </div></div>${res}`;
 }
 
