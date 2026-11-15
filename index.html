@@ -987,7 +987,7 @@ const esc = s => String(s).replace(/[&<>"]/g, c => ({'&':'&amp;','<':'&lt;','>':
 const pick = a => a[Math.floor(Math.random()*a.length)];
 
 /* ---------- mise à jour automatique (app installée sur l'écran d'accueil) ---------- */
-const APP_VER = '1.26.0';
+const APP_VER = '1.26.1';
 async function checkUpdate(){
  if(location.protocol.indexOf('http')!==0 || location.hostname.indexOf('claude')>=0) return;
  try {
@@ -1883,7 +1883,7 @@ let C = null;
 function mkFighter(k, side, lvl){
  const c = CARDS[k];
  const L = lvl||1, pv = c.pv + (LVPV[L]||0);
- return {k, c, side, hp:pv, max:pv, atkB:LVAT[L]||0, aAtk:0, aPv:0, cd:0, lvl:lvl||1, acted:false, stun:0, silence:0, miss:0, atkDown:0, vuln:null, dots:[], shield:0, dodge:0, hide:0, reflect:0, revived:false, dead:false, tmp:0};
+ return {k, c, side, hp:pv, max:pv, atkB:LVAT[L]||0, aAtk:0, aPv:0, cd:(c.sp&&c.sp.t==='stunall'?2:0), lvl:lvl||1, acted:false, stun:0, silence:0, miss:0, atkDown:0, vuln:null, dots:[], shield:0, dodge:0, hide:0, reflect:0, revived:false, dead:false, tmp:0};
 }
 const shuffle = a => { a = a.slice(); for(let i=a.length-1;i>0;i--){ const j = Math.floor(Math.random()*(i+1)); [a[i],a[j]] = [a[j],a[i]]; } return a; };
 function alliances(side, announce){
@@ -2002,7 +2002,7 @@ function doAction(f, mode, tgt){
  f.cd = f.c.rc >= 99 ? 99 : f.c.sp.t==='stunall' ? Math.max(3, f.c.rc) : Math.max(1, f.c.rc - (f.lvl>=8?2:f.lvl>=5?1:0));
  switch(sp.t){
   case 'dmg': { const d = hit(f, tgt, v, o);
-   if(sp.stun && !tgt.dead && d>0){ tgt.stun = 1; L(`${tgt.c.nom} passe son prochain tour`, f.side); }
+   if(sp.stun && !tgt.dead && d>0) stunT(tgt, f.side);
    if(sp.silence && !tgt.dead){ tgt.silence = 1; L(`${tgt.c.nom} ne peut plus utiliser sa spéciale au prochain tour`, f.side); }
    if(sp.shield){ const al = lowest(f.side); if(al){ al.shield = 1; L(`${al.c.nom} est protégé de la prochaine attaque`, f.side); } }
    if(sp.teaminv){ C.inv[f.side] = 1; L(`Toute l'équipe est protégée pendant 1 tour`, f.side); }
@@ -2017,7 +2017,7 @@ function doAction(f, mode, tgt){
    L(`Une des quatre voix de ${f.c.nom} prend la parole : ${nm} !`, f.side);
    if(r===1) hit(f, tgt, spVal(f, 200), o);
    else if(r===0) alive(f.side).forEach(t => heal(t, spVal(f, 60)));
-   else if(r===2){ tgt.stun = 1; L(`${tgt.c.nom} passe son prochain tour`, f.side); }
+   else if(r===2) stunT(tgt, f.side);
    else alive(os).forEach(t => hit(f, t, spVal(f, 50), o));
    break; }
   case 'multi': for(let i=0;i<sp.n;i++){ const t = tgt.dead ? alive(os)[0] : tgt; if(t) hit(f, t, v, o); } break;
@@ -2026,11 +2026,11 @@ function doAction(f, mode, tgt){
   case 'heal1': heal(tgt, v); break;
   case 'healself': heal(f, v); break;
   case 'healteam': alive(f.side).forEach(t => heal(t, v)); break;
-  case 'stun': if(sp.chance && Math.random()>sp.chance){ L(`… mais ça ne marche pas`, f.side); break; } tgt.stun = 1; L(`${tgt.c.nom} passe son prochain tour`, f.side); break;
-  case 'stunall': alive(os).forEach(t => t.stun = 1); L(`Tous les adversaires passent leur prochain tour`, f.side); break;
+  case 'stun': if(sp.chance && Math.random()>sp.chance){ L(`… mais ça ne marche pas`, f.side); break; } stunT(tgt, f.side); break;
+  case 'stunall': { const ok = alive(os).filter(t => !t.stunImm); ok.forEach(t => t.stun = 1); L(ok.length ? `${ok.length===alive(os).length?'Tous les adversaires passent':ok.length+' adversaire(s) passe(nt)'} leur prochain tour` : `… mais ils viennent d'être bloqués : ça ne marche pas`, f.side); break; }
   case 'dot': tgt.dots.push({v, n:sp.n}); L(`${tgt.c.nom} subira ${v} PV par tour`, f.side); break;
   case 'dotall': alive(os).forEach(t => t.dots.push({v, n:sp.n})); L(`Tous les adversaires subiront ${v} PV par tour`, f.side); break;
-  case 'steal': { const d = hit(f, tgt, v, o); if(d>0) heal(f, d); if(sp.stun && !tgt.dead){ tgt.stun = 1; L(`${tgt.c.nom} passe son prochain tour`, f.side); } break; }
+  case 'steal': { const d = hit(f, tgt, v, o); if(d>0) heal(f, d); if(sp.stun && !tgt.dead) stunT(tgt, f.side); break; }
   case 'silence': tgt.silence = 1; L(`${tgt.c.nom} perd sa spéciale pour 1 tour`, f.side); break;
   case 'reflect': f.reflect = 1; L(`${f.c.nom} renverra la prochaine attaque`, f.side); break;
   case 'cdup': alive(os).forEach(t => { if(t.cd < 90) t.cd += 1; }); L(`La recharge des spéciales adverses augmente d'1 tour`, f.side); break;
@@ -2055,10 +2055,11 @@ function checkEnd(){
 }
 function endPhase(side){
  const os = side==='p'?'e':'p';
- C[side].forEach(f => { f.stun = 0; f.silence = 0; f.acted = false; });
+ C[side].forEach(f => { f.stunImm = f.stun ? 1 : 0; f.stun = 0; f.silence = 0; f.acted = false; });
  C[os].forEach(f => { f.hide = 0; });
  C.inv[os] = 0; C.half[os] = 0;
 }
+function stunT(t, side){ if(t.stunImm){ L(`${t.c.nom} vient d'être bloqué : il résiste`, side); return; } t.stun = 1; L(`${t.c.nom} passe son prochain tour`, side); }
 function startPhase(side){ C[side].forEach(f => { if(f.cd>0 && f.cd<90) f.cd--; }); }
 function endRound(){
  [...C.p, ...C.e].forEach(f => {
