@@ -718,6 +718,16 @@ body.homemode .wrap{padding:0 10px 30px}
 .walk.w-mythic{--wc:#d0a0ff;--wc2:#7dffcf;--wt:rgba(90,30,160,.32);--lum:1.08;--lum2:1.5;--ray:.35;--ray2:.75;--gs:130vmin;--go:1}
 .walk.on{opacity:1}.walk.out{opacity:0;transition:opacity .9s}
 .wbg{position:absolute;inset:0;background:url(img/walk_tunnel.jpg) 50% 57%/cover no-repeat;transform-origin:50% 60%;transform:scale(1);filter:brightness(var(--lum));transition:transform 12s cubic-bezier(.35,0,.65,1),filter 2.5s ease-in-out}
+.wflag{position:absolute;inset:0;background:var(--fan);-webkit-mask:url(img/walk_flag.png) 50% 57%/cover no-repeat;mask:url(img/walk_flag.png) 50% 57%/cover no-repeat;mix-blend-mode:color;opacity:0;transition:opacity 1.6s ease-in-out .4s}
+.wflag.lit{mix-blend-mode:soft-light;background:var(--fan2)}
+.walk.on .wflag{opacity:1}
+.walk{--fan:#2f6fe8;--fan2:rgba(80,140,255,.5)}
+.walk.w-commune{--fan:#8c939c;--fan2:rgba(200,205,215,.45)}
+.walk.w-ultra{--fan:#9a4dff;--fan2:rgba(190,130,255,.6)}
+.walk.w-legend{--fan:#ffc21a;--fan2:rgba(255,225,120,.95)}
+.walk.w-mythic{--fan:linear-gradient(100deg,#ff5fb0,#ffd84a,#4dffc0,#4db8ff,#b77bff,#ff5fb0) 0 0/300% 100%;--fan2:linear-gradient(100deg,rgba(255,150,210,.8),rgba(255,240,140,.8),rgba(140,255,220,.8),rgba(140,200,255,.8),rgba(210,170,255,.8),rgba(255,150,210,.8)) 0 0/300% 100%}
+.walk.w-mythic .wflag{animation:wfan 6s linear infinite}
+@keyframes wfan{to{background-position:300% 0}}
 .walk.s4 .wbg,.walk.s5 .wbg{filter:brightness(var(--lum2)) saturate(1.15)}
 .wrays{position:absolute;left:50%;top:60%;width:240vmax;height:240vmax;transform:translate(-50%,-50%);mix-blend-mode:screen;opacity:var(--ray);background:repeating-conic-gradient(from 0deg,rgba(255,255,255,.55) 0deg 3deg,transparent 3deg 14deg);-webkit-mask:radial-gradient(circle,#000 0%,rgba(0,0,0,.5) 18%,transparent 45%);mask:radial-gradient(circle,#000 0%,rgba(0,0,0,.5) 18%,transparent 45%);animation:wspin 60s linear infinite;transition:opacity 2.5s ease-in-out}
 .walk.s4 .wrays,.walk.s5 .wrays{opacity:var(--ray2)}
@@ -1047,7 +1057,7 @@ const esc = s => String(s).replace(/[&<>"]/g, c => ({'&':'&amp;','<':'&lt;','>':
 const pick = a => a[Math.floor(Math.random()*a.length)];
 
 /* ---------- mise à jour automatique (app installée sur l'écran d'accueil) ---------- */
-const APP_VER = '1.36.2';
+const APP_VER = '1.36.3';
 async function checkUpdate(){
  if(location.protocol.indexOf('http')!==0 || location.hostname.indexOf('claude')>=0) return;
  try {
@@ -1652,7 +1662,7 @@ function walkout(){
  const w = document.createElement('div'); w.className = `walk w-${r}`; w.id = 'walk'; w.style.setProperty('--ec', e ? e.c : '#ffd75a');
  const nm = {commune:0, rare:6, ultra:16, legend:30, mythic:44}[r];
  const motes = Array.from({length:nm}, () => `<i style="left:${(Math.random()*100).toFixed(1)}%;--t:${(7+Math.random()*6).toFixed(1)}s;--d:${(-Math.random()*12).toFixed(1)}s;--s:${(2+Math.random()*4).toFixed(1)}px;--x:${(Math.random()*80-40).toFixed(0)}px"></i>`).join('');
- w.innerHTML = `<div class="wbg"></div><div class="wtint"></div><div class="wrays"></div><div class="wglow"></div><div class="wdim"></div><div class="wmotes">${motes}</div>
+ w.innerHTML = `<div class="wbg"><div class="wflag"></div><div class="wflag lit"></div></div><div class="wtint"></div><div class="wrays"></div><div class="wglow"></div><div class="wdim"></div><div class="wmotes">${motes}</div>
   <div class="wst ws1"><span class="wlab">ÉQUIPE</span><b class="fg">${esc(st ? 'Stade' : (c.team||'')).toUpperCase()}</b></div>
   <div class="wst ws2"><span class="wlab">${st?'TERRAIN':'POINTS DE VIE'}</span><b class="fg">${st?'★':c.pv}</b></div>
   <div class="wst ws3">${ico}<b class="fg">${st ? 'STADE' : (e?e.n:'').toUpperCase()}</b></div>
