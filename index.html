@@ -1026,7 +1026,7 @@ function migrate(o){ o = Object.assign(newSave(), o); if(!o.v || o.v<2){ o.story
   if(o.alv > old) o._lvMsg = `Niveau de compte recalculé selon ta progression : tu es niveau ${o.alv}` + (got ? ` (+${got} pièces de récompense).` : '.');
   o.v = 15; }
  if(o.v<16){ const dn = (o.story||{}).done||{}; for(let j=3;j>=0;j--){ if(dn['10-'+j]){ dn['10-'+(j+1)] = 1; delete dn['10-'+j]; } } if(dn['10-1']) dn['10-0'] = 1; o.v = 16; }
- if(o.v<17){ const dn = (o.story||{}).done||{}; if(dn['0-1'] && (o.arcBonus||{})[0]) dn['0-2'] = 1; o.v = 17; }
+ if(o.v<17){ o.v = 17; }
  return o; }
 /* ---- niveau du compte ---- */
 const XPN = L => Math.round(15 + 0.025*L*L); // XP pour passer du niveau L au niveau L+1 : rapide au début, de plus en plus lent
