@@ -601,6 +601,12 @@ body.homemode .wrap{padding:0 10px 30px}
 .pk-classique .pack img{filter:saturate(.55) brightness(.92)}
 .pk-avance .pack img{filter:hue-rotate(185deg) saturate(1.25)}
 .pk-premium .pack img{filter:sepia(.35) saturate(1.6) brightness(1.08) drop-shadow(0 0 10px rgba(255,210,90,.9))}
+.pkrow:has(.pk-ultime) .pkopt{width:18%}
+.pk-ultime .pack img{filter:hue-rotate(250deg) saturate(2.4) brightness(1.15) drop-shadow(0 0 16px rgba(208,160,255,1))}
+.pkopt.pk-ultime .pack-btn{animation:mythpk 2.4s linear infinite}
+@keyframes mythpk{0%{filter:drop-shadow(0 0 10px #ff7fc0)}33%{filter:drop-shadow(0 0 14px #7dffcf)}66%{filter:drop-shadow(0 0 14px #7fd0ff)}100%{filter:drop-shadow(0 0 10px #ff7fc0)}}
+.pkopt.pk-ultime .pkname{color:#f3e6ff;text-shadow:0 0 12px #d0a0ff,0 0 22px #ff7fc0,0 2px 4px #000}
+.pklim{color:#ffd75a}
 .pk-golden .pack img{filter:sepia(1) saturate(3.2) hue-rotate(-8deg) brightness(1.2) contrast(1.05) drop-shadow(0 0 14px rgba(255,215,90,1))}
 .pkopt.pk-golden .pack-btn{animation:goldglow 1.8s ease-in-out infinite}
 @keyframes goldglow{0%,100%{filter:drop-shadow(0 0 6px rgba(255,210,80,.6))}50%{filter:drop-shadow(0 0 22px rgba(255,230,120,1))}}
@@ -988,7 +994,7 @@ const esc = s => String(s).replace(/[&<>"]/g, c => ({'&':'&amp;','<':'&lt;','>':
 const pick = a => a[Math.floor(Math.random()*a.length)];
 
 /* ---------- mise à jour automatique (app installée sur l'écran d'accueil) ---------- */
-const APP_VER = '1.31.1';
+const APP_VER = '1.32.0';
 async function checkUpdate(){
  if(location.protocol.indexOf('http')!==0 || location.hostname.indexOf('claude')>=0) return;
  try {
@@ -1410,6 +1416,8 @@ const PACKS = {
   txt:'<b>1 commune</b> et <b>2 rares ou mieux</b>', pct:'chaque carte rare ou mieux : rare 80 %, ultra rare 17 %, légendaire 3 %'},
  premium: {nom:'Paquet Premium', prix:3000, slots:[{ultra:.91, legend:.08, mythic:.01}],
   txt:'<b>1 seule carte</b>, ultra rare ou mieux garantie', pct:'ultra rare 91 %, légendaire 8 %, ultra légendaire 1 %'},
+ ultime: {nom:'Paquet Ultime', prix:15000, slots:[{mythic:1}], until:'2026-11-15T15:00:00Z', fin:'16h',
+  txt:'<b>1 seule carte</b>, ultra légendaire garantie', pct:'ultra légendaire 100 % · offre limitée'},
  golden: {nom:'Paquet Golden', prix:8000, slots:[{legend:.95, mythic:.05}],
   txt:'<b>1 seule carte</b>, légendaire ou mieux garantie', pct:'légendaire 95 %, ultra légendaire 5 %'},
 };
@@ -1421,6 +1429,7 @@ function rollSlot(sl){
 let curPack = 'avance';
 function doPull(id){
  const P = PACKS[id] || PACKS.avance;
+ if(P.until && Date.now() >= Date.parse(P.until)){ render(); return toast('Cette offre est terminée'); }
  if(S.gold < P.prix) return toast('Pas assez de pièces');
  if(lastPull && lastPull.some(p => p.dup && !p.done)) return toast('Choisis d\'abord quoi faire des doublons');
  S.gold -= P.prix; S.intro = true; curPack = id in PACKS ? id : 'avance';
@@ -1613,8 +1622,8 @@ function vGacha(){
   return `<div class="pkopt pk-${id}"><button class="pack-btn" data-act="pull" data-p="${id}" ${no?'disabled':''} aria-label="Ouvrir un ${P.nom} pour ${P.prix} pièces"><div class="pack" style="width:100%"><img class="pk-top" src="img/pack_top.webp" alt=""><div class="pk-b"><img src="img/pack_body.webp" alt=""></div></div></button>
    <div class="pkname fg">${P.nom.replace('Paquet ','').toUpperCase()}</div>
    <button class="btn gold sm" data-act="pull" data-p="${id}" ${no?'disabled':''}>${P.prix} pièces</button>
-   <div class="pkinfo">${P.txt}<br><span>${P.pct}</span></div></div>`; };
- const ids = ['classique','avance','premium','golden'];
+   <div class="pkinfo">${P.txt}<br><span>${P.pct}</span>${P.until?`<br><b class="pklim">Jusqu'à ${P.fin} · encore ${Math.max(0,Math.ceil((Date.parse(P.until)-Date.now())/60000))} min</b>`:''}</div></div>`; };
+ const ids = ['classique','avance','premium','golden'].concat(Object.keys(PACKS).filter(id => PACKS[id].until && Date.now() < Date.parse(PACKS[id].until)));
  if(isPortrait()) return `<div class="pscene" style="background-image:url(img/ui_gacha.jpg)">
   <div class="ptitle fg">TIRAGES</div>
   <div class="pkrow p">${ids.map(packBtn).join('')}</div>
